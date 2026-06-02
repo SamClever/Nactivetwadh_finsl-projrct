@@ -1,0 +1,419 @@
+.payments-container{
+
+padding:30px;
+
+}
+
+
+
+/* HEADER */
+
+.payments-header{
+
+margin-bottom:30px;
+
+}
+
+
+.payments-header h1{
+
+font-size:32px;
+
+margin-bottom:10px;
+
+color:#1e3a8a;
+
+}
+
+
+.payments-header p{
+
+color:#727d8e;
+
+}
+
+
+
+
+/* FORM */
+
+.payments-form{
+
+background:white;
+
+padding:30px;
+
+border-radius:20px;
+
+max-width:700px;
+
+box-shadow:
+0 2px 10px rgba(
+0,
+0,
+0,
+0.05
+);
+
+}
+
+
+
+
+/* FORM GROUP */
+
+.payments-form .form-group{
+
+display:flex;
+
+flex-direction:column;
+
+margin-bottom:22px;
+
+}
+
+
+
+
+/* LABELS */
+
+.payments-form .form-group label{
+
+margin-bottom:8px;
+
+font-weight:600;
+
+color:#1f2937;
+
+}
+
+
+
+
+/* INPUTS */
+
+.payments-form .form-group input,
+
+.payments-form .form-group select{
+
+padding:14px;
+
+border:1px solid #ddd;
+
+border-radius:10px;
+
+outline:none;
+
+font-size:15px;
+
+color:#374151;
+
+transition:.3s;
+
+}
+
+
+
+
+/* INPUT FOCUS */
+
+.payments-form .form-group input:focus,
+
+.payments-form .form-group select:focus{
+
+border-color:#14b8a6;
+
+box-shadow:
+0 0 0 2px
+rgba(
+20,
+184,
+166,
+0.15
+);
+
+}
+
+
+
+
+/* SUBMIT BUTTON */
+
+.submit-btn{
+
+background:#0f766e;
+
+color:white;
+
+border:none;
+
+padding:12px 18px;
+
+border-radius:12px;
+
+cursor:pointer;
+
+font-size:14px;
+
+font-weight:600;
+
+transition:.3s;
+
+min-width:170px;
+
+}
+
+
+.submit-btn:hover{
+
+opacity:.92;
+
+transform:
+translateY(-1px);
+
+}
+
+
+
+
+/* PAYMENT LIST */
+
+.payments-list{
+
+margin-top:35px;
+
+}
+
+
+.payments-list h2{
+
+font-size:24px;
+
+color:#1e3a8a;
+
+margin-bottom:20px;
+
+}
+
+
+
+
+/* PAYMENT CARD */
+
+.payment-card{
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+padding:18px;
+
+background:white;
+
+border-radius:14px;
+
+margin-bottom:15px;
+
+box-shadow:
+0 2px 10px
+rgba(
+0,
+0,
+0,
+0.05
+);
+
+transition:.3s;
+
+}
+
+
+.payment-card:hover{
+
+transform:
+translateY(-2px);
+
+box-shadow:
+0 5px 18px
+rgba(
+0,
+0,
+0,
+0.08
+);
+
+}
+
+
+
+
+.payment-card h4{
+
+margin:0;
+
+color:#1f2937;
+
+font-size:16px;
+
+}
+
+
+.payment-card p{
+
+margin:5px 0;
+
+color:#6b7280;
+
+}
+
+
+.payment-card small{
+
+color:#0f766e;
+
+font-weight:600;
+
+text-transform:capitalize;
+
+}
+
+
+
+
+/* ACTIONS */
+
+.payment-actions{
+
+display:flex;
+
+gap:10px;
+
+}
+
+
+
+
+/* EDIT BUTTON */
+
+.edit-btn{
+
+background:#2563eb;
+
+color:white;
+
+border:none;
+
+padding:10px 14px;
+
+border-radius:10px;
+
+cursor:pointer;
+
+font-size:14px;
+
+font-weight:600;
+
+transition:.3s;
+
+}
+
+
+.edit-btn:hover{
+
+background:#1d4ed8;
+
+transform:
+translateY(-1px);
+
+}
+
+
+
+
+/* DELETE BUTTON */
+
+.delete-btn{
+
+background:#dc2626;
+
+color:white;
+
+border:none;
+
+padding:10px 14px;
+
+border-radius:10px;
+
+cursor:pointer;
+
+font-size:14px;
+
+font-weight:600;
+
+transition:.3s;
+
+}
+
+
+.delete-btn:hover{
+
+background:#b91c1c;
+
+transform:
+translateY(-1px);
+
+}
+
+
+
+
+/* SWEET ALERT */
+
+.round-popup{
+
+border-radius:22px !important;
+
+padding:20px !important;
+
+width:320px !important;
+
+}
+
+
+.round-title{
+
+font-size:20px !important;
+
+font-weight:700 !important;
+
+color:#1f2937 !important;
+
+}
+
+
+.round-confirm{
+
+border-radius:12px !important;
+
+padding:10px 20px !important;
+
+font-size:14px !important;
+
+font-weight:600 !important;
+
+}
+
+
+.round-cancel{
+
+border-radius:12px !important;
+
+padding:10px 20px !important;
+
+font-size:14px !important;
+
+font-weight:600 !important;
+
+}

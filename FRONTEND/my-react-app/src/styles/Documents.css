@@ -1,0 +1,409 @@
+.documents-container{
+
+padding:30px;
+
+}
+
+
+.documents-header{
+
+margin-bottom:30px;
+
+}
+
+
+.documents-header h1{
+
+font-size:32px;
+
+color:#1e3a8a;
+
+margin-bottom:8px;
+
+}
+
+
+.documents-header p{
+
+color:#727d8e;
+
+}
+
+
+
+/* FORM CARD */
+
+.documents-form{
+
+background:white;
+
+padding:30px;
+
+border-radius:20px;
+
+max-width:700px;
+
+box-shadow:
+0 2px 10px
+rgba(
+0,
+0,
+0,
+.05
+);
+
+}
+
+
+
+/* FORM GROUP */
+
+.documents-form .form-group{
+
+display:flex;
+
+flex-direction:column;
+
+margin-bottom:20px;
+
+}
+
+
+
+/* LABEL */
+
+.documents-form label{
+
+margin-bottom:8px;
+
+font-weight:600;
+
+color:#1f2937;
+
+}
+
+
+
+/* INPUTS */
+
+.documents-form input,
+
+.documents-form select{
+
+padding:14px;
+
+border:1px solid #ddd;
+
+border-radius:10px;
+
+font-size:15px;
+
+outline:none;
+
+color:#374151;
+
+transition:.3s;
+
+}
+
+
+
+/* FOCUS */
+
+.documents-form input:focus,
+
+.documents-form select:focus{
+
+border-color:#14b8a6;
+
+box-shadow:
+0 0 0 2px
+rgba(
+20,
+184,
+166,
+0.15
+);
+
+}
+
+
+
+
+/* BUTTON */
+
+.upload-btn{
+
+background:#0f766e;
+
+color:white;
+
+border:none;
+
+padding:12px 18px;
+
+border-radius:12px;
+
+font-size:14px;
+
+font-weight:600;
+
+cursor:pointer;
+
+transition:.3s;
+
+min-width:170px;
+
+}
+
+
+
+.upload-btn:hover{
+
+opacity:.92;
+
+transform:
+translateY(-1px);
+
+}
+
+
+
+
+/* DOCUMENTS LIST */
+
+.documents-list{
+
+margin-top:35px;
+
+}
+
+
+
+.documents-list h2{
+
+font-size:24px;
+
+color:#1e3a8a;
+
+margin-bottom:20px;
+
+}
+
+
+
+/* DOCUMENT CARD */
+
+.document-card{
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+padding:18px;
+
+background:white;
+
+border-radius:14px;
+
+margin-bottom:15px;
+
+box-shadow:
+0 2px 10px
+rgba(
+0,
+0,
+0,
+0.05
+);
+
+transition:.3s;
+
+}
+
+
+
+.document-card:hover{
+
+transform:
+translateY(-2px);
+
+box-shadow:
+0 5px 18px
+rgba(
+0,
+0,
+0,
+0.08
+);
+
+}
+
+
+
+.document-card h4{
+
+margin:0;
+
+color:#1f2937;
+
+font-size:16px;
+
+}
+
+
+
+.document-card p{
+
+margin:5px 0;
+
+color:#6b7280;
+
+}
+
+
+
+.document-card small{
+
+color:#0f766e;
+
+font-weight:600;
+
+}
+
+
+
+/* ACTIONS */
+
+.doc-actions{
+
+display:flex;
+
+gap:10px;
+
+}
+
+
+
+/* EDIT BUTTON */
+
+.edit-btn{
+
+background:#2563eb;
+
+color:white;
+
+border:none;
+
+padding:10px 14px;
+
+border-radius:10px;
+
+cursor:pointer;
+
+font-size:14px;
+
+font-weight:600;
+
+transition:.3s;
+
+}
+
+
+.edit-btn:hover{
+
+background:#1d4ed8;
+
+transform:
+translateY(-1px);
+
+}
+
+
+
+/* DELETE BUTTON */
+
+.delete-btn{
+
+background:#dc2626;
+
+color:white;
+
+border:none;
+
+padding:10px 14px;
+
+border-radius:10px;
+
+cursor:pointer;
+
+font-size:14px;
+
+font-weight:600;
+
+transition:.3s;
+
+}
+
+
+.delete-btn:hover{
+
+background:#b91c1c;
+
+transform:
+translateY(-1px);
+
+}
+
+/* SWEET ALERT */
+
+.round-popup{
+
+border-radius:22px ;
+
+padding:20px ;
+
+width:320px;
+
+}
+
+
+.round-title{
+
+font-size:20px ;
+
+font-weight:700 ;
+
+color:#1f2937 ;
+
+}
+
+
+.round-confirm{
+
+border-radius:12px;
+
+background:#0f766e ;
+
+padding:10px 20px ;
+
+font-size:14px ;
+
+font-weight:600 ;
+
+}
+
+
+.round-cancel{
+
+border-radius:12px;
+
+padding:10px 20px ;
+
+font-size:14px ;
+
+font-weight:600 ;
+
+}
