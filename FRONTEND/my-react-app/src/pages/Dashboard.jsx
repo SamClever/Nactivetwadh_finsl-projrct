@@ -167,7 +167,7 @@ export default function Dashboard() {
               <div className="card-content">
                 <span>PAYMENT</span>
                 <h3>{latestApplication?.payment_status || 'Pending'}</h3>
-                <p>Awaiting verification</p>
+                <p>{latestApplication?.payment_status === 'paid' ? 'Payment completed' : 'Awaiting verification'}</p>
               </div>
             </div>
           </div>
@@ -191,7 +191,7 @@ export default function Dashboard() {
               <div className={latestApplication?.status === 'submitted' ? 'progress-item complete' : 'progress-item pending'}>
                 {latestApplication?.status === 'submitted' ? <CheckCircle size={18} /> : <Circle size={18} />}
                 Registration Submitted
-              </div>git add
+              </div>
 
               <div className={latestApplication?.payment_status === 'paid' ? 'progress-item complete' : 'progress-item pending'}>
                 {latestApplication?.payment_status === 'paid' ? <CheckCircle size={18} /> : <Circle size={18} />}

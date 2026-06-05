@@ -1,4 +1,8 @@
+import random
+from datetime import timedelta
+
 from django.db import models
+from django.utils import timezone
 
 
 # =====================================
@@ -247,6 +251,28 @@ class Payment(models.Model):
         default='pending'
     )
 
+    receipt_number = models.CharField(
+        max_length=150,
+        null=True,
+        blank=True
+    )
+
+    transaction_reference = models.CharField(
+        max_length=150,
+        null=True,
+        blank=True
+    )
+
+    paid_at = models.DateTimeField(
+        null=True,
+        blank=True
+    )
+
+    expires_at = models.DateTimeField(
+        null=True,
+        blank=True
+    )
+
     created_at = models.DateTimeField(
         auto_now_add=True
     )
@@ -256,6 +282,58 @@ class Payment(models.Model):
 
     def __str__(self):
         return self.control_number
+
+    @classmethod
+    def generate_unique_control_number(cls):
+        while True:
+            control_number = f"CTRL-{random.randint(100000, 999999)}"
+            if not cls.objects.filter(control_number=control_number).exists():
+                return control_number
+
+    def mark_paid(self):
+        self.status = 'paid'
+        if not self.paid_at:
+            self.paid_at = timezone.now()
+        if not self.receipt_number:
+            self.receipt_number = f"RCPT-{random.randint(100000, 999999)}"
+        if not self.transaction_reference:
+            self.transaction_reference = f"TRX-{random.randint(10000000, 99999999)}"
+        self.save()
+
+    @property
+    def is_expired(self):
+        return self.status == 'pending' and self.expires_at and timezone.now() > self.expires_at
+
+
+class PaymentAuditLog(models.Model):
+    payment = models.ForeignKey(
+        Payment,
+        on_delete=models.CASCADE,
+        related_name='audit_logs'
+    )
+    user = models.ForeignKey(
+        User,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL
+    )
+    action = models.CharField(
+        max_length=120
+    )
+    details = models.TextField(
+        null=True,
+        blank=True
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    class Meta:
+        db_table = 'payment_audit_logs'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.action} - {self.payment.control_number}"
 
 
 # =====================================

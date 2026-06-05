@@ -2,7 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth.hashers import make_password
 
 
-from .models import User, Institution ,Application,  Document,Payment,Review, InspectionTeam, TeamMember,  InspectionForm,  FormQuestion,    Inspection,  InspectionResponse,  Certificate
+from .models import User, Institution ,Application,  Document,Payment,PaymentAuditLog,Review, InspectionTeam, TeamMember,  InspectionForm,  FormQuestion,    Inspection,  InspectionResponse,  Certificate
 
    
 class UserSerializer(serializers.ModelSerializer):
@@ -145,39 +145,80 @@ class DocumentSerializer(serializers.ModelSerializer):
 
         ]
 
-class PaymentSerializer(serializers.ModelSerializer):
+class PaymentAuditLogSerializer(serializers.ModelSerializer):
+    user = serializers.CharField(source='user.username', default=None)
 
     class Meta:
-
-        model = Payment
-
+        model = PaymentAuditLog
         fields = [
-
             'id',
-
-            'application',
-
-            'amount',
-
-            'control_number',
-
-            'payment_method',
-
-            'status',
-
+            'action',
+            'details',
+            'user',
             'created_at'
-
         ]
-
         read_only_fields = [
-
             'id',
-
-            'created_at',
-
-            'control_number'
-
+            'action',
+            'details',
+            'user',
+            'created_at'
         ]
+
+
+class PaymentSerializer(serializers.ModelSerializer):
+    application_reference = serializers.CharField(
+        source='application.reference_number',
+        read_only=True
+    )
+    institution_name = serializers.CharField(
+        source='application.institution.institution_name',
+        read_only=True
+    )
+    payer_name = serializers.CharField(
+        source='application.institution.institution_owner',
+        read_only=True
+    )
+    is_expired = serializers.SerializerMethodField()
+    audit_logs = PaymentAuditLogSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Payment
+        fields = [
+            'id',
+            'application',
+            'application_reference',
+            'institution_name',
+            'payer_name',
+            'amount',
+            'control_number',
+            'payment_method',
+            'status',
+            'receipt_number',
+            'transaction_reference',
+            'paid_at',
+            'expires_at',
+            'is_expired',
+            'created_at',
+            'audit_logs'
+        ]
+        extra_kwargs = {
+            'amount': {'required': False},
+            'payment_method': {'required': False},
+        }
+        read_only_fields = [
+            'id',
+            'created_at',
+            'control_number',
+            'application_reference',
+            'institution_name',
+            'payer_name',
+            'is_expired',
+            'audit_logs'
+        ]
+
+    def get_is_expired(self, obj):
+        return obj.is_expired
 class ReviewSerializer(serializers.ModelSerializer):
 
     class Meta:

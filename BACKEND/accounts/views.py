@@ -1,5 +1,6 @@
 import logging
 import random
+from datetime import timedelta
 
 from django.utils import timezone
 from django.contrib.auth.hashers import check_password
@@ -19,7 +20,7 @@ from .models import (
     Application,
     Document,
     Payment,
-    
+    PaymentAuditLog,
 )
 
 from .serializers import (
@@ -31,6 +32,21 @@ from .serializers import (
     PaymentSerializer
 )
 
+
+def create_payment_audit_log(payment, user, action, details=None):
+    PaymentAuditLog.objects.create(
+        payment=payment,
+        user=user,
+        action=action,
+        details=details or ''
+    )
+
+
+def compute_expiry_date():
+    return timezone.now() + timedelta(days=7)
+
+
+DEFAULT_PAYMENT_AMOUNT = 100000
 
 logger = logging.getLogger(__name__)
 
@@ -1164,6 +1180,29 @@ def manage_payments(request, pk=None):
 
     if request.method == "GET":
 
+        control_number = request.GET.get(
+            'control_number'
+        )
+
+        if control_number:
+            try:
+                payment = Payment.objects.get(
+                    control_number=control_number,
+                    application__institution=institution
+                )
+            except Payment.DoesNotExist:
+                return Response(
+                    {
+                        "error": "Control number not found"
+                    },
+                    status=404
+                )
+
+            serializer = PaymentSerializer(
+                payment
+            )
+            return Response(serializer.data)
+
         payments = Payment.objects.filter(
 
             application__institution=
@@ -1239,44 +1278,23 @@ def manage_payments(request, pk=None):
             # GENERATE CONTROL NUMBER
             # =========================
 
-            while True:
-
-                control_number = (
-
-                    "CTRL-"
-
-                    +
-
-                    str(
-
-                        random.randint(
-                            100000,
-                            999999
-                        )
-
-                    )
-
-                )
-
-
-                if not Payment.objects.filter(
-
-                    control_number=
-                    control_number
-
-                ).exists():
-
-                    break
+            control_number = Payment.generate_unique_control_number()
 
 
 
             payment = serializer.save(
-
                 application=application,
+                control_number=control_number,
+                amount=DEFAULT_PAYMENT_AMOUNT,
+                payment_method='mobile_money',
+                expires_at=compute_expiry_date()
+            )
 
-                control_number=
-                control_number
-
+            create_payment_audit_log(
+                payment,
+                institution.user,
+                action='Control number generated',
+                details=f'Generated control number {control_number}'
             )
 
 
@@ -1336,23 +1354,59 @@ def manage_payments(request, pk=None):
 
 
 
+        regenerate_control_number = request.data.get(
+            'regenerate_control_number'
+        )
+
+        if regenerate_control_number:
+            if payment.status == 'paid':
+                return Response(
+                    {
+                        'error':
+                        'Cannot regenerate a paid payment'
+                    },
+                    status=400
+                )
+
+            new_control_number = Payment.generate_unique_control_number()
+            payment.control_number = new_control_number
+            payment.status = 'pending'
+            payment.expires_at = compute_expiry_date()
+            payment.save()
+
+            create_payment_audit_log(
+                payment,
+                institution.user,
+                action='Control number regenerated',
+                details=f'Regenerated control number {new_control_number}'
+            )
+
+            return Response(
+                PaymentSerializer(payment).data
+            )
+
         serializer = PaymentSerializer(
-
             payment,
-
             data=request.data,
-
             partial=True
-
         )
 
 
         if serializer.is_valid():
-
-            serializer.save()
+            updated_payment = serializer.save()
+            if updated_payment.status == 'paid':
+                updated_payment.mark_paid()
+                updated_payment.application.payment_status = 'paid'
+                updated_payment.application.save(update_fields=['payment_status'])
+                create_payment_audit_log(
+                    updated_payment,
+                    updated_payment.application.institution.user,
+                    action='Payment confirmed',
+                    details='Payment status updated to paid'
+                )
 
             return Response(
-                serializer.data
+                PaymentSerializer(updated_payment).data
             )
 
 
