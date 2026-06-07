@@ -25,6 +25,15 @@ export default function Applications() {
   const [editingId, setEditingId]
     = useState(null);
 
+  const [calendarOpen, setCalendarOpen]
+    = useState(false);
+
+  const [calendarMonth, setCalendarMonth]
+    = useState(new Date().getMonth());
+
+  const [calendarYear, setCalendarYear]
+    = useState(new Date().getFullYear());
+
 
 
   /* =========================
@@ -35,7 +44,11 @@ export default function Applications() {
     = useState({
 
       application_type: "",
-      category: ""
+      category: "",
+      programs_requested: "",
+      application_description: "",
+      expected_students: "",
+      preferred_inspection_date: ""
 
     });
 
@@ -126,6 +139,71 @@ export default function Applications() {
 
   };
 
+  const monthNames = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December"
+  ];
+
+  const formatDateDisplay = (value) => {
+    if (!value) return "";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return value;
+    return date.toLocaleDateString(undefined, {
+      month: "short",
+      day: "2-digit",
+      year: "numeric"
+    });
+  };
+
+  const getDaysInMonth = (year, month) => {
+    return new Date(year, month + 1, 0).getDate();
+  };
+
+  const buildCalendarDays = (year, month) => {
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = getDaysInMonth(year, month);
+    const days = Array(firstDay).fill(null);
+    for (let day = 1; day <= daysInMonth; day++) {
+      days.push(day);
+    }
+    return days;
+  };
+
+  const handleSelectDate = (day) => {
+    const date = new Date(calendarYear, calendarMonth, day);
+    const iso = date.toISOString().slice(0, 10);
+    setFormData({
+      ...formData,
+      preferred_inspection_date: iso
+    });
+    setCalendarOpen(false);
+  };
+
+  const handleMonthChange = (direction) => {
+    setCalendarMonth((current) => {
+      const next = current + direction;
+      if (next < 0) {
+        setCalendarYear((year) => year - 1);
+        return 11;
+      }
+      if (next > 11) {
+        setCalendarYear((year) => year + 1);
+        return 0;
+      }
+      return next;
+    });
+  };
+
 
 
   /* =========================
@@ -147,7 +225,19 @@ export default function Applications() {
           application.application_type,
 
         category:
-          application.category
+          application.category,
+
+        programs_requested:
+          application.programs_requested || "",
+
+        application_description:
+          application.application_description || "",
+
+        expected_students:
+          application.expected_students || "",
+
+        preferred_inspection_date:
+          application.preferred_inspection_date || ""
 
       });
 
@@ -175,7 +265,11 @@ export default function Applications() {
     setFormData({
 
       application_type: "",
-      category: ""
+      category: "",
+      programs_requested: "",
+      application_description: "",
+      expected_students: "",
+      preferred_inspection_date: ""
 
     });
 
@@ -229,7 +323,19 @@ export default function Applications() {
                 formData.application_type,
 
               category:
-                formData.category
+                formData.category,
+
+              programs_requested:
+                formData.programs_requested,
+
+              application_description:
+                formData.application_description,
+
+              expected_students:
+                formData.expected_students,
+
+              preferred_inspection_date:
+                formData.preferred_inspection_date
 
             },
 
@@ -268,6 +374,18 @@ export default function Applications() {
 
               category:
                 formData.category,
+
+              programs_requested:
+                formData.programs_requested,
+
+              application_description:
+                formData.application_description,
+
+              expected_students:
+                formData.expected_students,
+
+              preferred_inspection_date:
+                formData.preferred_inspection_date,
 
               status:
                 "submitted",
@@ -712,6 +830,163 @@ export default function Applications() {
                 onChange={handleChange}
 
                 required
+
+              />
+
+            </div>
+
+
+
+            <div className="form-group">
+
+              <label>
+
+                Programs / Courses Requested
+
+              </label>
+
+
+
+              <input
+
+                type="text"
+
+                name="programs_requested"
+
+                placeholder="e.g. Electrical Engineering, Hospitality"
+
+                value={formData.programs_requested}
+
+                onChange={handleChange}
+
+              />
+
+            </div>
+
+
+
+            <div className="form-group">
+
+              <label>
+
+                Expected Number of Students
+
+              </label>
+
+
+
+              <input
+
+                type="number"
+
+                name="expected_students"
+
+                placeholder="e.g. 200"
+
+                value={formData.expected_students}
+
+                onChange={handleChange}
+
+              />
+
+            </div>
+
+
+
+            <div className="form-group date-picker-group">
+
+              <label>
+
+                Preferred Inspection Date
+
+              </label>
+
+
+
+              <div className="date-picker-field" onClick={() => setCalendarOpen(!calendarOpen)}>
+                <input
+                  type="text"
+                  name="preferred_inspection_date"
+                  value={formatDateDisplay(formData.preferred_inspection_date)}
+                  placeholder="Select date"
+                  readOnly
+                />
+                <span className="calendar-icon">📅</span>
+              </div>
+
+              {calendarOpen && (
+                <div className="calendar-popup">
+                  <div className="calendar-header">
+                    <button type="button" onClick={() => handleMonthChange(-1)}>
+                      ‹
+                    </button>
+                    <div>
+                      <strong>
+                        {monthNames[calendarMonth]} {calendarYear}
+                      </strong>
+                      <div className="calendar-subtitle">
+                        Select month, day & year
+                      </div>
+                    </div>
+                    <button type="button" onClick={() => handleMonthChange(1)}>
+                      ›
+                    </button>
+                  </div>
+                  <div className="calendar-grid">
+                    {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map((label) => (
+                      <div key={label} className="calendar-day-label">
+                        {label}
+                      </div>
+                    ))}
+                    {buildCalendarDays(calendarYear, calendarMonth).map((day, index) =>
+                      day ? (
+                        <button
+                          type="button"
+                          key={`${calendarYear}-${calendarMonth}-${day}`}
+                          className={
+                            formData.preferred_inspection_date ===
+                            new Date(calendarYear, calendarMonth, day)
+                              .toISOString()
+                              .slice(0, 10)
+                              ? 'calendar-day selected'
+                              : 'calendar-day'
+                          }
+                          onClick={() => handleSelectDate(day)}
+                        >
+                          {day}
+                        </button>
+                      ) : (
+                        <div key={`empty-${index}`} className="calendar-day-empty" />
+                      )
+                    )}
+                  </div>
+                </div>
+              )}
+
+            </div>
+
+
+            <div className="form-group full-width">
+
+              <label>
+
+                Application Details
+
+              </label>
+
+
+
+              <textarea
+
+                name="application_description"
+
+                placeholder="Provide any details about this application"
+
+                value={formData.application_description}
+
+                onChange={handleChange}
+
+                rows={5}
 
               />
 

@@ -823,8 +823,6 @@ export default function Documents() {
 
             </div>
 
-
-
             <div className="form-group">
 
               <label>
@@ -850,10 +848,6 @@ export default function Documents() {
               />
 
             </div>
-
-
-
-
 
             <div className="form-group">
 

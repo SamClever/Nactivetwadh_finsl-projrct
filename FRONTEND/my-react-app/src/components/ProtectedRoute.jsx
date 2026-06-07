@@ -4,12 +4,18 @@ export default function ProtectedRoute({
   children
 }) {
 
-  const user = JSON.parse(
-    localStorage.getItem("user")
-  );
+  const token = localStorage.getItem("token");
+  const user = (() => {
+    try {
+      return JSON.parse(localStorage.getItem("user"));
+    } catch {
+      return null;
+    }
+  })();
 
-  return user
+  // Require BOTH token and user to be present
+  return (token && user)
     ? children
-    : <Navigate to="/" />;
+    : <Navigate to="/" replace />;
 
 }

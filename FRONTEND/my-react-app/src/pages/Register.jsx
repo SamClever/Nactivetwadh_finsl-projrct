@@ -1,516 +1,185 @@
-
-
-import { useState } from "react";
-import { Link } from "react-router-dom";
-
+﻿import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 import "../styles/Register.css";
 
-
-
 export default function Register() {
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    confirm_password: "",
+  });
+  const [errors, setErrors] = useState({});
 
-
-
-  /* =========================
-     STATES
-  ========================= */
-
-  const [formData, setFormData]
-    = useState({
-
-      first_name: "",
-      last_name: "",
-      username: "",
-      password: "",
-      email: "",
-      institution_name: "",
-      institution_owner: "",
-      location: ""
-
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
     });
 
+    if (errors[name]) {
+      setErrors({
+        ...errors,
+        [name]: "",
+      });
+    }
+  };
 
-  /* =========================
-     HANDLE INPUT CHANGE
-  ========================= */
+  const validate = () => {
+    const newErrors = {};
 
-  const handleChange =
-    (e) => {
+    if (!formData.email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = "Email is invalid";
+    }
 
-      setFormData({
+    if (!formData.password) {
+      newErrors.password = "Password is required";
+    } else if (formData.password.length < 6) {
+      newErrors.password = "Password must be at least 6 characters";
+    }
 
-        ...formData,
+    if (!formData.confirm_password) {
+      newErrors.confirm_password = "Confirm password is required";
+    } else if (formData.password !== formData.confirm_password) {
+      newErrors.confirm_password = "Passwords do not match";
+    }
 
-        [e.target.name]:
-          e.target.value
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!validate()) {
+      return;
+    }
+
+    try {
+      const response = await fetch("http://127.0.0.1:8000/api/register/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
       });
 
-    };
+      const data = await response.json();
+      console.log("REGISTER RESPONSE:", data);
 
+      if (response.ok) {
+        await Swal.fire({
+          icon: "success",
+          title: "Registration successful",
+          text: "You can now sign in using your email and password.",
+          timer: 1500,
+          showConfirmButton: false,
+          width: "320px",
+          customClass: {
+            popup: "small-round-alert",
+            title: "alert-title",
+            htmlContainer: "alert-text",
+          },
+        });
 
-  /* =========================
-     HANDLE SUBMIT
-  ========================= */
+        navigate("/");
+      } else {
+        const errorMessage =
+          data.email ||
+          data.password ||
+          data.confirm_password ||
+          data.detail ||
+          data.error ||
+          "Registration failed";
 
-  const handleSubmit =
-    async (e) => {
-
-      e.preventDefault();
-
-
-
-
-      try {
-
-        const response =
-          await fetch(
-
-            "http://127.0.0.1:8000/api/register/",
-
-            {
-
-              method: "POST",
-
-
-
-              headers: {
-
-                "Content-Type":
-                  "application/json",
-
-              },
-
-
-
-              body:
-                JSON.stringify(formData),
-
-            }
-
-          );
-
-
-
-
-        const data =
-          await response.json();
-
-
-
-        console.log(
-          "REGISTER RESPONSE:",
-          data
-        );
-
-
-        /* =========================
-           SUCCESS
-        ========================= */
-
-        if (response.ok) {
-
-          alert(
-            "Registration successful"
-          );
-
-
-
-          /* RESET FORM */
-
-          setFormData({
-
-            first_name: "",
-            last_name: "",
-            username: "",
-            password: "",
-            email: "",
-            institution_name: "",
-            institution_owner: "",
-            location: ""
-
-          });
-
-        }
-
-
-        /* =========================
-           FAILED
-        ========================= */
-
-        else {
-
-          alert(
-            "Registration failed"
-          );
-
-
-
-          console.log(
-            "REGISTER ERROR:",
-            data
-          );
-
-        }
-
+        Swal.fire({
+          icon: "error",
+          title: "Registration Failed",
+          text: errorMessage,
+          width: "320px",
+          customClass: {
+            popup: "small-round-alert",
+          },
+        });
       }
-
-
-      /* =========================
-         SERVER ERROR
-      ========================= */
-
-      catch (error) {
-
-        console.error(
-          "SERVER ERROR:",
-          error
-        );
-
-
-
-        alert(
-          "Server error"
-        );
-
-      }
-
-    };
-
-
-
-  /* =========================
-     RETURN
-  ========================= */
+    } catch (error) {
+      console.log("REGISTER ERROR:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Server Error",
+        text: "Something went wrong",
+        width: "320px",
+        customClass: {
+          popup: "small-round-alert",
+        },
+      });
+    }
+  };
 
   return (
-
     <div className="register-container">
-
-
-
-
       <div className="register-card">
-
-
-
-
-        {/* HEADER */}
-
         <div className="register-header">
-
-          <img
-
-            src="/src/assets/logo.png"
-
-            alt="logo"
-
-          />
-
-
-
-          <h2>
-
-            Create account
-
-          </h2>
-
-
-
+          <img src="/src/assets/logo.png" alt="logo" />
+          <h2>Create account</h2>
           <p>
-
-            NACTVET Institutions
-            Registration and
-            Accreditation System
-
+            Register with your email and password. After sign in, complete
+            institution registration from the protected Institution page.
           </p>
-
         </div>
 
-
-
-        {/* FORM */}
-
         <form onSubmit={handleSubmit}>
-
-
-
-
-          <div className="form-grid">
-
-
-
-
-            {/* FIRST NAME */}
-
-            <div className="form-group">
-
-              <label>
-
-                First Name
-
-              </label>
-
-
-
-              <input
-
-                type="text"
-
-                name="first_name"
-
-                value={formData.first_name}
-
-                onChange={handleChange}
-
-                required
-
-              />
-
-            </div>
-
-
-            {/* LAST NAME */}
-
-            <div className="form-group">
-
-              <label>
-
-                Last Name
-
-              </label>
-
-
-
-              <input
-
-                type="text"
-
-                name="last_name"
-
-                value={formData.last_name}
-
-                onChange={handleChange}
-
-                required
-
-              />
-
-            </div>
-
-
-            {/* USERNAME */}
-
-            <div className="form-group">
-
-              <label>
-
-                Username
-
-              </label>
-
-
-
-              <input
-
-                type="text"
-
-                name="username"
-
-                value={formData.username}
-
-                onChange={handleChange}
-
-                required
-
-              />
-
-            </div>
-
-
-            {/* PASSWORD */}
-
-            <div className="form-group">
-
-              <label>
-
-                Password
-
-              </label>
-
-
-
-              <input
-
-                type="password"
-
-                name="password"
-
-                value={formData.password}
-
-                onChange={handleChange}
-
-                required
-
-              />
-
-            </div>
-
-
-            {/* EMAIL */}
-
-            <div className="form-group">
-
-              <label>
-
-                Email
-
-              </label>
-
-
-
-              <input
-
-                type="email"
-
-                name="email"
-
-                value={formData.email}
-
-                onChange={handleChange}
-
-                required
-
-              />
-
-            </div>
-
-            {/* INSTITUTION NAME */}
-
-            <div className="form-group">
-
-              <label>
-
-                Institution Name
-
-              </label>
-
-
-
-              <input
-
-                type="text"
-
-                name="institution_name"
-
-                value={formData.institution_name}
-
-                onChange={handleChange}
-
-                required
-
-              />
-
-            </div>
-
-
-            {/* INSTITUTION OWNER */}
-
-            <div className="form-group">
-
-              <label>
-
-                Institution Owner
-
-              </label>
-
-
-
-              <input
-
-                type="text"
-
-                name="institution_owner"
-
-                value={formData.institution_owner}
-
-                onChange={handleChange}
-
-                required
-
-              />
-
-            </div>
-
-
-            {/* LOCATION */}
-
-            <div className="form-group">
-
-              <label>
-
-                Location
-
-              </label>
-
-
-
-              <input
-
-                type="text"
-
-                name="location"
-
-                value={formData.location}
-
-                onChange={handleChange}
-
-                required
-
-              />
-
-            </div>
-
+          <div className="form-group">
+            <label>Email</label>
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+            />
+            {errors.email && <span className="error-message">{errors.email}</span>}
           </div>
 
+          <div className="form-group">
+            <label>Password</label>
+            <input
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              required
+            />
+            {errors.password && <span className="error-message">{errors.password}</span>}
+          </div>
 
-          {/* BUTTON */}
+          <div className="form-group">
+            <label>Confirm Password</label>
+            <input
+              type="password"
+              name="confirm_password"
+              value={formData.confirm_password}
+              onChange={handleChange}
+              required
+            />
+            {errors.confirm_password && (
+              <span className="error-message">{errors.confirm_password}</span>
+            )}
+          </div>
 
-          <button
-
-            type="submit"
-
-            className="register-btn"
-
-          >
-
+          <button type="submit" className="register-btn">
             Register
-
           </button>
-
         </form>
 
-
-        {/* FOOTER */}
-
-        <p className="register-footer">
-
-          Already registered?
-
-          {" "}
-
-          <Link to="/">
-
-            Sign in
-
-          </Link>
-
+        <p className="register-text">
+          Already have an account? <Link to="/" className="register-link">Sign in</Link>
         </p>
-
       </div>
-
     </div>
-
   );
-
 }

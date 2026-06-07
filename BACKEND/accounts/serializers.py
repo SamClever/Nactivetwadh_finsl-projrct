@@ -28,6 +28,11 @@ class InstitutionSerializer(serializers.ModelSerializer):
         read_only=True
     )
 
+    phone=serializers.CharField(
+        source='user.phone',
+        read_only=True
+    )
+
     class Meta:
 
         model=Institution
@@ -35,54 +40,70 @@ class InstitutionSerializer(serializers.ModelSerializer):
         fields=[
 
             'id',
-
             'institution_name',
-
+            'institution_type',
+            'registration_number',
+            'certificate_number',
             'institution_owner',
-
+            'owner_title',
+            'principal_name',
+            'principal_email',
+            'principal_phone',
+            'street_address',
             'location',
-
+            'region',
+            'district',
+            'programs_offered',
+            'total_students',
+            'total_staff',
+            'facility_status',
+            'has_library',
+            'has_laboratory',
+            'has_workshop',
+            'accreditation_status',
+            'previous_accreditation',
+            'years_operation',
             'username',
-
-            'email'
+            'email',
+            'phone',
+            'created_at',
+            'updated_at'
 
         ]
 class RegisterSerializer(serializers.Serializer):
 
-    first_name = serializers.CharField()
-    last_name = serializers.CharField()
-    username = serializers.CharField()
     email = serializers.EmailField()
-    password = serializers.CharField()
+    password = serializers.CharField(write_only=True)
+    confirm_password = serializers.CharField(write_only=True)
 
-    institution_name = serializers.CharField()
-    institution_owner = serializers.CharField()
-    location = serializers.CharField()
+    def validate(self, data):
+        password = data.get('password')
+        confirm_password = data.get('confirm_password')
+
+        if password != confirm_password:
+            raise serializers.ValidationError({
+                'confirm_password': 'Passwords do not match'
+            })
+
+        if len(password) < 6:
+            raise serializers.ValidationError({
+                'password': 'Password must be at least 6 characters long'
+            })
+
+        return data
 
     def create(self, validated_data):
-
         user = User.objects.create(
-            first_name=validated_data['first_name'],
-            last_name=validated_data['last_name'],
-            username=validated_data['username'],
+            first_name='',
+            last_name='',
+            username=validated_data['email'],
             email=validated_data['email'],
+            phone='',
             password=make_password(validated_data['password']),
             role='institution'
         )
 
-        Institution.objects.create(
-            user=user,
-            institution_name=validated_data['institution_name'],
-            institution_owner=validated_data['institution_owner'],
-            location=validated_data['location']
-        )
-
         return user
-
-    def validate_username(self, value):
-        if User.objects.filter(username=value).exists():
-            raise serializers.ValidationError("Username already exists")
-        return value
 
     def validate_email(self, value):
         if User.objects.filter(email=value).exists():

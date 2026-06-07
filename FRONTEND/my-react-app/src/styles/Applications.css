@@ -1,7 +1,8 @@
 .application-container{
-
-padding:30px;
-
+  padding:30px 20px;
+  width:100%;
+  max-width:100%;
+  margin:0 auto;
 }
 
 
@@ -9,9 +10,7 @@ padding:30px;
 /* HEADER */
 
 .application-header{
-
-margin-bottom:30px;
-
+  margin-bottom:30px;
 }
 
 
@@ -38,37 +37,154 @@ color:#727d8e;
 /* FORM */
 
 .application-form{
-
-background:white;
-
-padding:30px;
-
-border-radius:20px;
-
-max-width:700px;
-
-box-shadow:
-0 2px 10px rgba(
-0,
-0,
-0,
-.05
-);
-
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:24px;
+  background:white;
+  padding:40px;
+  border-radius:24px;
+  border:1px solid rgba(148,163,184,0.12);
+  box-shadow:0 4px 20px rgba(0,0,0,0.05);
+  width:100%;
+  max-width:none;
 }
 
-
-
-/* FORM GROUP */
-
 .application-form .form-group{
+  margin-bottom:24px;
+  display:flex;
+  flex-direction:column;
+}
 
-margin-bottom:22px;
+.application-form .date-picker-group{
+  position:relative;
+  width:100%;
+}
 
-display:flex;
+.application-form .date-picker-field{
+  display:flex;
+  align-items:center;
+  width:100%;
+  min-height:52px;
+  border:1px solid #ddd;
+  border-radius:12px;
+  background:#fff;
+  padding:0 10px;
+  cursor:pointer;
+  box-sizing:border-box;
+}
 
-flex-direction:column;
+.application-form .date-picker-field input{
+  border:none;
+  outline:none;
+  flex:1;
+  width:100%;
+  height:100%;
+  padding:14px 32px 14px 0;
+  margin:0;
+  background:transparent;
+  cursor:pointer;
+  font-size:15px;
+  line-height:1.4;
+}
 
+.application-form .calendar-icon{
+  position:absolute;
+  right:10px;
+  top:50%;
+  transform:translateY(-50%);
+  font-size:18px;
+  pointer-events:none;
+}
+
+.application-form .calendar-popup{
+  position:absolute;
+  z-index:20;
+  top:100%;
+  left:0;
+  right:auto;
+  width:min(360px, 100%);
+  max-width:360px;
+  background:#fff;
+  border:1px solid rgba(148,163,184,0.18);
+  box-shadow:0 14px 30px rgba(15,23,42,0.08);
+  border-radius:18px;
+  padding:12px;
+  margin-top:4px;
+  box-sizing:border-box;
+}
+
+.application-form .calendar-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:14px;
+}
+
+.application-form .calendar-header button{
+  border:none;
+  background:#eef2ff;
+  color:#3730a3;
+  font-size:18px;
+  width:36px;
+  height:36px;
+  border-radius:12px;
+  cursor:pointer;
+}
+
+.application-form .calendar-subtitle{
+  font-size:12px;
+  color:#64748b;
+}
+
+.application-form .calendar-grid{
+  display:grid;
+  grid-template-columns:repeat(7, minmax(0, 1fr));
+  gap:10px;
+}
+
+.application-form .calendar-day-label{
+  font-size:12px;
+  font-weight:700;
+  color:#475569;
+  text-align:center;
+}
+
+.application-form .calendar-day,
+.application-form .calendar-day-empty{
+  min-height:42px;
+  border-radius:12px;
+}
+
+.application-form .calendar-day{
+  border:none;
+  background:#f8fafc;
+  color:#0f172a;
+  cursor:pointer;
+  transition:all 0.2s ease;
+}
+
+.application-form .calendar-day:hover{
+  background:#eef2ff;
+}
+
+.application-form .calendar-day.selected{
+  background:linear-gradient(135deg,#667eea,#10b981);
+  color:#fff;
+}
+
+.application-form .calendar-day-empty{
+  background:transparent;
+}
+
+.application-form .form-group.full-width{
+  grid-column:1 / -1;
+}
+
+.application-form .submit-btn{
+  grid-column:1 / -1;
+  justify-self:end;
+  min-width:160px;
 }
 
 
@@ -91,7 +207,9 @@ color:#1f2937;
 
 .application-form .form-group input,
 
-.application-form .form-group select{
+.application-form .form-group select,
+
+.application-form .form-group textarea{
 
 padding:14px;
 
@@ -106,6 +224,8 @@ font-size:15px;
 color:#374151;
 
 transition:.3s;
+
+background:#fff;
 
 }
 

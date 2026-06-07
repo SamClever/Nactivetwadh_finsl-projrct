@@ -36,6 +36,12 @@ class User(models.Model):
         unique=True
     )
 
+    phone = models.CharField(
+        max_length=20,
+        null=True,
+        blank=True
+    )
+
     password = models.CharField(
         max_length=255
     )
@@ -63,21 +69,179 @@ class User(models.Model):
 
 class Institution(models.Model):
 
+    INSTITUTION_TYPE_CHOICES = (
+        ('technical', 'Technical School'),
+        ('vocational', 'Vocational Training Centre'),
+        ('institute', 'Technical Institute'),
+        ('university', 'Technical University'),
+        ('other', 'Other'),
+    )
+
+    FACILITY_STATUS_CHOICES = (
+        ('excellent', 'Excellent'),
+        ('good', 'Good'),
+        ('fair', 'Fair'),
+        ('poor', 'Poor'),
+        ('under_development', 'Under Development'),
+    )
+
+    ACCREDITATION_STATUS_CHOICES = (
+        ('seeking', 'Seeking Accreditation'),
+        ('accredited', 'Fully Accredited'),
+        ('provisional', 'Provisionally Accredited'),
+        ('renewal', 'Accreditation Renewal'),
+    )
+
+    PREVIOUS_ACCREDITATION_CHOICES = (
+        ('none', 'Never Accredited'),
+        ('approved', 'Previously Approved'),
+        ('accredited', 'Previously Accredited'),
+        ('revoked', 'Accreditation Revoked'),
+    )
+
     user = models.OneToOneField(
         User,
         on_delete=models.CASCADE
     )
 
+    # Basic Information
     institution_name = models.CharField(
         max_length=255
     )
 
+    institution_type = models.CharField(
+        max_length=50,
+        choices=INSTITUTION_TYPE_CHOICES,
+        null=True,
+        blank=True
+    )
+
+    registration_number = models.CharField(
+        max_length=100,
+        null=True,
+        blank=True
+    )
+
+    certificate_number = models.CharField(
+        max_length=100,
+        null=True,
+        blank=True
+    )
+
+    # Ownership & Management
     institution_owner = models.CharField(
         max_length=255
     )
 
+    owner_title = models.CharField(
+        max_length=100,
+        null=True,
+        blank=True
+    )
+
+    principal_name = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True
+    )
+
+    principal_email = models.EmailField(
+        null=True,
+        blank=True
+    )
+
+    principal_phone = models.CharField(
+        max_length=20,
+        null=True,
+        blank=True
+    )
+
+    # Location
+    street_address = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True
+    )
+
     location = models.CharField(
         max_length=255
+    )
+
+    region = models.CharField(
+        max_length=100,
+        null=True,
+        blank=True
+    )
+
+    district = models.CharField(
+        max_length=100,
+        null=True,
+        blank=True
+    )
+
+    # Programs & Statistics
+    programs_offered = models.TextField(
+        null=True,
+        blank=True
+    )
+
+    total_students = models.IntegerField(
+        null=True,
+        blank=True
+    )
+
+    total_staff = models.IntegerField(
+        null=True,
+        blank=True
+    )
+
+    # Facilities
+    facility_status = models.CharField(
+        max_length=50,
+        choices=FACILITY_STATUS_CHOICES,
+        null=True,
+        blank=True
+    )
+
+    has_library = models.BooleanField(
+        default=False
+    )
+
+    has_laboratory = models.BooleanField(
+        default=False
+    )
+
+    has_workshop = models.BooleanField(
+        default=False
+    )
+
+    # Accreditation Information
+    accreditation_status = models.CharField(
+        max_length=50,
+        choices=ACCREDITATION_STATUS_CHOICES,
+        null=True,
+        blank=True
+    )
+
+    previous_accreditation = models.CharField(
+        max_length=50,
+        choices=PREVIOUS_ACCREDITATION_CHOICES,
+        null=True,
+        blank=True
+    )
+
+    years_operation = models.IntegerField(
+        null=True,
+        blank=True
+    )
+
+    # Metadata
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    updated_at = models.DateTimeField(
+        auto_now=True
     )
 
     class Meta:
@@ -129,6 +293,27 @@ class Application(models.Model):
 
     category = models.CharField(
         max_length=100
+    )
+
+    programs_requested = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True
+    )
+
+    application_description = models.TextField(
+        null=True,
+        blank=True
+    )
+
+    expected_students = models.IntegerField(
+        null=True,
+        blank=True
+    )
+
+    preferred_inspection_date = models.DateField(
+        null=True,
+        blank=True
     )
 
     status = models.CharField(

@@ -6,7 +6,7 @@ import "../styles/login.css";
 export default function Login() {
   const navigate = useNavigate();
 
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -20,32 +20,33 @@ export default function Login() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ email, password }),
       });
 
       const data = await response.json();
       console.log("LOGIN RESPONSE:", data);
+      console.log("Response OK:", response.ok);
+      console.log("Has access:", !!data.access);
+      console.log("Has user:", !!data.user);
 
-      if (response.ok) {
+      if (response.ok && data.access && data.user) {
+        console.log("✓ Login successful, storing data...");
+        
+        // Store token and user
         localStorage.setItem("token", data.access);
         localStorage.setItem("user", JSON.stringify(data.user));
+        
+        console.log("✓ Token stored:", data.access.substring(0, 20) + "...");
+        console.log("✓ User stored:", data.user);
+        console.log("✓ Navigating to dashboard...");
 
-        await Swal.fire({
-          icon: "success",
-          title: "Login Successful",
-          text: "Redirecting to dashboard...",
-          timer: 1500,
-          showConfirmButton: false,
-          width: "320px",
-          customClass: {
-            popup: "small-round-alert",
-            title: "alert-title",
-            htmlContainer: "alert-text",
-          },
-        });
-
-        navigate("/dashboard");
+        // Redirect immediately
+        navigate("/dashboard", { replace: true });
+        
+        return;
       } else {
+        console.error("Login failed:", data);
+        setLoading(false);
         Swal.fire({
           icon: "error",
           title: "Login Failed",
@@ -57,7 +58,8 @@ export default function Login() {
         });
       }
     } catch (error) {
-      console.log("LOGIN ERROR:", error);
+      setLoading(false);
+      console.error("LOGIN ERROR:", error);
       Swal.fire({
         icon: "error",
         title: "Server Error",
@@ -67,8 +69,6 @@ export default function Login() {
           popup: "small-round-alert",
         },
       });
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -83,11 +83,12 @@ export default function Login() {
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label>Username</label>
+            <label>Email</label>
             <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              autoComplete="email"
               required
             />
           </div>
@@ -98,6 +99,7 @@ export default function Login() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              autoComplete="current-password"
               required
             />
           </div>
@@ -108,7 +110,7 @@ export default function Login() {
         </form>
 
         <p className="register-text">
-          Don&apos;t have account? <Link to="/register" className="register-link">Register institution</Link>
+          Don&apos;t have an account? <Link to="/register" className="register-link">Create an account</Link>
         </p>
       </div>
     </div>

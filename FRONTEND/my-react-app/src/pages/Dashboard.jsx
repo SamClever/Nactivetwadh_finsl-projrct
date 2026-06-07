@@ -25,19 +25,18 @@ export default function Dashboard() {
   }, []);
 
   useEffect(() => {
-    fetchApplications();
-    fetchDocuments();
+    const token = localStorage.getItem('token');
+    if (token) {
+      fetchApplications();
+      fetchDocuments();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchApplications = async () => {
     try {
       const token = localStorage.getItem('token');
-      if (!token) {
-        navigate('/');
-        return;
-      }
-
+      
       const res = await axios.get('http://127.0.0.1:8000/api/applications/', {
         headers: {
           Authorization: 'Bearer ' + token,

@@ -35,22 +35,39 @@ color:#727d8e;
 
 .documents-form{
 
-background:white;
+  display:grid;
 
-padding:30px;
+  grid-template-columns:repeat(2,minmax(0,1fr));
 
-border-radius:20px;
+  gap:24px;
 
-max-width:700px;
+  background:white;
 
-box-shadow:
-0 2px 10px
-rgba(
-0,
-0,
-0,
-.05
-);
+  padding:40px;
+
+  border-radius:24px;
+
+  border:1px solid rgba(148,163,184,0.12);
+
+  box-shadow:0 4px 20px rgba(0,0,0,0.05);
+
+  width:100%;
+
+  max-width:none;
+
+}
+
+.documents-form .form-group.full-width{
+
+  grid-column:1 / -1;
+
+}
+
+.documents-form .upload-btn{
+
+  grid-column:1 / -1;
+
+  justify-self:end;
 
 }
 

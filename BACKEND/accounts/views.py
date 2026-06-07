@@ -174,6 +174,18 @@ def manage_institutions(request, pk=None):
     
     # GET - list all or retrieve one
     if request.method=="GET":
+        try:
+            auth_header=request.headers.get("Authorization")
+            if not auth_header:
+                return Response({"error":"No Authorization header"}, status=401)
+
+            token=auth_header.split(" ")[1]
+            decoded=AccessToken(token)
+            user_id=decoded["user_id"]
+            user=User.objects.get(id=user_id)
+        except Exception as e:
+            return Response({"error": str(e)}, status=401)
+
         if pk:
             try:
                 instance=Institution.objects.get(id=pk)
@@ -181,10 +193,13 @@ def manage_institutions(request, pk=None):
                 return Response(serializer.data)
             except Institution.DoesNotExist:
                 return Response({"error":"Not found"}, status=404)
-        
-        instances=Institution.objects.all()
-        serializer=InstitutionSerializer(instances, many=True)
-        return Response(serializer.data)
+
+        try:
+            institution = Institution.objects.get(user=user)
+            serializer = InstitutionSerializer(institution)
+            return Response(serializer.data)
+        except Institution.DoesNotExist:
+            return Response({}, status=200)
     
     # POST - create new institution (requires auth to set user)
     elif request.method=="POST":
@@ -292,8 +307,8 @@ def register(request):
 @api_view(['POST'])
 def login(request):
 
-    username=request.data.get(
-        "username"
+    email=request.data.get(
+        "email"
     )
 
     password=request.data.get(
@@ -303,7 +318,7 @@ def login(request):
     try:
 
         user=User.objects.get(
-            username=username
+            email=email
         )
 
 
@@ -344,6 +359,9 @@ def login(request):
 
                     "username":
                     user.username,
+
+                    "email":
+                    user.email,
 
                     "role":
                     user.role
