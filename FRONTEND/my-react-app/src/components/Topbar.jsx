@@ -25,21 +25,18 @@ export default function Topbar() {
   const displayName = user?.institution || user?.username || "User";
 
   return (
-    <header className="flex items-center justify-between px-8 py-4 bg-white border-b border-slate-200 shadow-sm">
-      <div className="flex flex-col gap-1">
-        <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Welcome to the portal</p>
-        <h2 className="text-2xl font-black text-slate-950">{currentTitle}</h2>
+    <header className="topbar">
+      <div className="topbar-info">
+        <span className="topbar-tag">Welcome to the portal</span>
+        <h2 className="topbar-title">{currentTitle}</h2>
       </div>
 
-      <div className="flex items-center gap-4">
-        <div className="flex flex-col items-end justify-center gap-0">
-          <span className="text-sm font-semibold text-slate-900 leading-5 whitespace-nowrap">{displayName}</span>
-          <span className="text-[11px] text-slate-500 leading-4 whitespace-nowrap">Signed in</span>
+      <div className="topbar-actions">
+        <div className="user-info">
+          <span className="user-name">{displayName}</span>
+          <span className="user-status">Signed in</span>
         </div>
-        <button
-          className="inline-flex items-center gap-2 rounded-2xl bg-sky-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-sky-700 hover:-translate-y-0.5"
-          onClick={handleLogout}
-        >
+        <button className="logout-button" onClick={handleLogout}>
           <LogOut size={18} /> Logout
         </button>
       </div>
