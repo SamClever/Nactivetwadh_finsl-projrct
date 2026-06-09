@@ -65,12 +65,14 @@ export default function Login() {
           Swal.fire({
             icon: 'success',
             title: 'Login successful',
-            html: `<pre style="text-align:left;white-space:pre-wrap;word-break:break-word;">${JSON.stringify(data, null, 2)}</pre>`,
-            width: 520,
-            showConfirmButton: true,
-            confirmButtonText: 'OK',
+            text: 'Redirecting to your dashboard...',
+            toast: true,
+            position: 'top-end',
+            timer: 1200,
+            timerProgressBar: true,
+            showConfirmButton: false,
             customClass: { popup: 'small-round-alert' },
-          }).then((result) => {
+          }).then(() => {
             // Force a full navigation so ProtectedRoute sees stored values reliably
             try {
               window.location.href = '/dashboard';
@@ -127,7 +129,7 @@ export default function Login() {
           <p>NACTVET Institutions Registration and Accreditation System</p>
         </div>
 
-        <form className="compact-form" onSubmit={handleSubmit} autoComplete="off">
+        <form className="login-form" onSubmit={handleSubmit} autoComplete="off">
           <input type="text" name="fakeusernameremembered" style={{ display: 'none' }} />
           <input type="password" name="fakepasswordremembered" style={{ display: 'none' }} />
           <div className="form-group">

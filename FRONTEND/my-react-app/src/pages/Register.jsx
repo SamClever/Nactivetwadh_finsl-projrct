@@ -126,13 +126,10 @@ export default function Register() {
         <div className="register-header">
           <img src="/src/assets/logo.png" alt="logo" />
           <h2>Create account</h2>
-          <p>
-            Register with your email and password. After sign in, complete
-            institution registration from the protected Institution page.
-          </p>
+         
         </div>
 
-        <form className="compact-form" onSubmit={handleSubmit}>
+        <form className="register-form" onSubmit={handleSubmit}>
           <div className="form-group">
             <label>Email</label>
             <input
@@ -157,7 +154,7 @@ export default function Register() {
             {errors.password && <span className="error-message">{errors.password}</span>}
           </div>
 
-          <div className="form-group full-width">
+          <div className="form-group">
             <label>Confirm Password</label>
             <input
               type="password"
