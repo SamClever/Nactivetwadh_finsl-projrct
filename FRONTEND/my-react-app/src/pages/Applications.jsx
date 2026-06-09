@@ -734,7 +734,7 @@ export default function Applications() {
 
           <form
 
-            className="application-form"
+            className="application-form compact-form"
 
             onSubmit={handleSubmit}
 

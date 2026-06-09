@@ -1,0 +1,159 @@
+{
+  "regions": [
+    {
+      "id": "TZ-09",
+      "name": "Kilimanjaro",
+      "districts": []
+    },
+    {
+      "id": "TZ-13",
+      "name": "Mara",
+      "districts": []
+    },
+    {
+      "id": "TZ-26",
+      "name": "Manyara",
+      "districts": []
+    },
+    {
+      "id": "TZ-01",
+      "name": "Arusha",
+      "districts": []
+    },
+    {
+      "id": "TZ-05",
+      "name": "Kagera",
+      "districts": []
+    },
+    {
+      "id": "TZ-14",
+      "name": "Mbeya",
+      "districts": []
+    },
+    {
+      "id": "TZ-23",
+      "name": "Singida",
+      "districts": []
+    },
+    {
+      "id": "TZ-17",
+      "name": "Mtwara",
+      "districts": []
+    },
+    {
+      "id": "TZ-04",
+      "name": "Iringa",
+      "districts": []
+    },
+    {
+      "id": "TZ-12",
+      "name": "Lindi",
+      "districts": []
+    },
+    {
+      "id": "TZ-24",
+      "name": "Tabora",
+      "districts": []
+    },
+    {
+      "id": "TZ-19",
+      "name": "Pwani",
+      "districts": []
+    },
+    {
+      "id": "TZ-21",
+      "name": "Ruvuma",
+      "districts": []
+    },
+    {
+      "id": "TZ-16",
+      "name": "Morogoro",
+      "districts": []
+    },
+    {
+      "id": "TZ-20",
+      "name": "Rukwa",
+      "districts": []
+    },
+    {
+      "id": "TZ-08",
+      "name": "Kigoma",
+      "districts": []
+    },
+    {
+      "id": "TZ-25",
+      "name": "Tanga",
+      "districts": []
+    },
+    {
+      "id": "TZ-03",
+      "name": "Dodoma",
+      "districts": []
+    },
+    {
+      "id": "TZ-11",
+      "name": "Unguja Kusini",
+      "districts": []
+    },
+    {
+      "id": "TZ-06",
+      "name": "Kaskazini Pemba",
+      "districts": []
+    },
+    {
+      "id": "TZ-07",
+      "name": "Unguja Kaskazini",
+      "districts": []
+    },
+    {
+      "id": "TZ-15",
+      "name": "Unguja Mjini Magharibi",
+      "districts": []
+    },
+    {
+      "id": "TZ-10",
+      "name": "Kusini Pemba",
+      "districts": []
+    },
+    {
+      "id": "TZ-28",
+      "name": "Katavi",
+      "districts": []
+    },
+    {
+      "id": "TZ-29",
+      "name": "Njombe",
+      "districts": []
+    },
+    {
+      "id": "TZ-27",
+      "name": "Geita",
+      "districts": []
+    },
+    {
+      "id": "TZ-30",
+      "name": "Simiyu",
+      "districts": []
+    },
+    {
+      "id": "TZ-18",
+      "name": "Mwanza",
+      "districts": []
+    },
+    {
+      "id": "TZ-22",
+      "name": "Shinyanga",
+      "districts": []
+    },
+    {
+      "id": "TZ-02",
+      "name": "Dar es Salaam",
+      "districts": []
+    },
+    {
+      "id": "TZ-31",
+      "name": "Songwe",
+      "districts": []
+    }
+  ]
+}

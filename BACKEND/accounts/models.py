@@ -163,20 +163,41 @@ class Institution(models.Model):
         blank=True
     )
 
+    # Kept for backward compatibility but can be left empty when linked location IDs are set.
     location = models.CharField(
-        max_length=255
+        max_length=255,
+        null=True,
+        blank=True
     )
 
     region = models.CharField(
         max_length=100,
         null=True,
-        blank=True
+        blank=True,
+    )
+
+    city = models.CharField(
+        max_length=100,
+        null=True,
+        blank=True,
     )
 
     district = models.CharField(
         max_length=100,
         null=True,
-        blank=True
+        blank=True,
+    )
+
+    ward = models.CharField(
+        max_length=100,
+        null=True,
+        blank=True,
+    )
+
+    street = models.CharField(
+        max_length=100,
+        null=True,
+        blank=True,
     )
 
     # Programs & Statistics

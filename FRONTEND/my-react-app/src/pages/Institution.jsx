@@ -7,6 +7,7 @@ import Topbar from "../components/Topbar";
 import Swal from "sweetalert2";
 
 import "../styles/Institution.css";
+import LocationAutocomplete from "../components/LocationAutocomplete";
 
 export default function Institution() {
   /* =========================
@@ -31,8 +32,17 @@ export default function Institution() {
     principal_phone: "",
     street_address: "",
     location: "",
+    location_obj: null,
     region: "",
+    region_obj: null,
+    city: "",
+    city_obj: null,
     district: "",
+    district_obj: null,
+    ward: "",
+    ward_obj: null,
+    street: "",
+    street_obj: null,
     programs_offered: "",
     total_students: "",
     total_staff: "",
@@ -76,7 +86,15 @@ export default function Institution() {
         street_address: response.data.street_address || "",
         location: response.data.location || "",
         region: response.data.region || "",
+        region_obj: response.data.region_obj || (response.data.region ? { id: response.data.region, name: response.data.region } : null),
+        city: response.data.city || "",
+        city_obj: response.data.city_obj || (response.data.city ? { id: response.data.city, name: response.data.city } : null),
         district: response.data.district || "",
+        district_obj: response.data.district_obj || (response.data.district ? { id: response.data.district, name: response.data.district } : null),
+        ward: response.data.ward || "",
+        ward_obj: response.data.ward_obj || (response.data.ward ? { id: response.data.ward, name: response.data.ward } : null),
+        street: response.data.street || "",
+        street_obj: response.data.street_obj || (response.data.street ? { id: response.data.street, name: response.data.street } : null),
         programs_offered: response.data.programs_offered || "",
         total_students: response.data.total_students || "",
         total_staff: response.data.total_staff || "",
@@ -109,7 +127,6 @@ export default function Institution() {
     if (currentStage === 1) {
       if (!formData.institution_name) newErrors.institution_name = "Required";
       if (!formData.institution_type) newErrors.institution_type = "Required";
-      if (!formData.location) newErrors.location = "Required";
     }
 
     if (currentStage === 2) {
@@ -118,7 +135,10 @@ export default function Institution() {
       if (!formData.principal_email) newErrors.principal_email = "Required";
       if (!formData.street_address) newErrors.street_address = "Required";
       if (!formData.region) newErrors.region = "Required";
+      if (!formData.city) newErrors.city = "Required";
       if (!formData.district) newErrors.district = "Required";
+      if (!formData.ward) newErrors.ward = "Required";
+      if (!formData.street) newErrors.street = "Required";
     }
 
     if (currentStage === 3) {
@@ -160,9 +180,12 @@ export default function Institution() {
           principal_email: formData.principal_email,
           principal_phone: formData.principal_phone,
           street_address: formData.street_address,
-          location: formData.location,
-          region: formData.region,
-          district: formData.district,
+          location: formData.city_obj?.name || "",
+          region: formData.region_obj?.name || formData.region || "",
+          city: formData.city_obj?.name || formData.city || "",
+          district: formData.district_obj?.name || formData.district || "",
+          ward: formData.ward_obj?.name || formData.ward || "",
+          street: formData.street_obj?.name || formData.street || "",
           programs_offered: formData.programs_offered,
           total_students: formData.total_students,
           total_staff: formData.total_staff,
@@ -197,10 +220,16 @@ export default function Institution() {
       fetchInstitution();
     } catch (error) {
       console.log("UPDATE ERROR:", error);
+      const responseData = error.response?.data;
+      const errorMessage = responseData
+        ? typeof responseData === 'string'
+          ? responseData
+          : JSON.stringify(responseData)
+        : error.message || 'Something went wrong';
       Swal.fire({
         icon: "error",
         title: "Update Failed",
-        text: "Something went wrong",
+        text: errorMessage,
         customClass: {
           popup: "round-popup",
           title: "round-title",
@@ -214,6 +243,15 @@ export default function Institution() {
 
   const totalStages = 4;
   const progress = (currentStage / totalStages) * 100;
+  const locationSummary = [
+    formData.street_obj?.name,
+    formData.ward_obj?.name,
+    formData.district_obj?.name,
+    formData.city_obj?.name,
+    formData.region_obj?.name
+  ]
+    .filter(Boolean)
+    .join(', ');
 
   return (
     <div className="dashboard-layout">
@@ -224,6 +262,71 @@ export default function Institution() {
           <div className="institution-header">
             <h1>Institution Profile</h1>
             <p>Manage institution account and profile information</p>
+            <div style={{ marginTop: 12 }}>
+              <button type="button" className="btn-small" onClick={async () => {
+                try {
+                  // eslint-disable-next-line no-console
+                  console.log('Auto-fill button clicked');
+
+                  const apiBase = 'http://127.0.0.1:8000/api/locations';
+                  const regionsRes = await axios.get(`${apiBase}/regions/`, { params: { page_size: 25 } });
+                  const region = regionsRes.data.results?.[0] || regionsRes.data[0] || null;
+
+                  const citiesRes = region
+                    ? await axios.get(`${apiBase}/cities/`, { params: { region: region.id, page_size: 25 } })
+                    : { data: [] };
+                  const city = citiesRes.data.results?.[0] || citiesRes.data[0] || null;
+
+                  const districtsRes = city
+                    ? await axios.get(`${apiBase}/districts/`, { params: { city: city.id, page_size: 25 } })
+                    : { data: [] };
+                  const district = districtsRes.data.results?.[0] || districtsRes.data[0] || null;
+
+                  const wardsRes = district
+                    ? await axios.get(`${apiBase}/wards/`, { params: { district: district.id, page_size: 25 } })
+                    : { data: [] };
+                  const ward = wardsRes.data.results?.[0] || wardsRes.data[0] || null;
+
+                  const streetsRes = ward
+                    ? await axios.get(`${apiBase}/streets/`, { params: { ward: ward.id, page_size: 25 } })
+                    : { data: [] };
+                  const street = streetsRes.data.results?.[0] || streetsRes.data[0] || null;
+
+                  setFormData((prev) => ({
+                    ...prev,
+                    institution_name: 'Sample Institute of Technology',
+                    institution_type: 'technical',
+                    registration_number: 'REG-2024-001',
+                    certificate_number: 'CERT-2024-001',
+                    institution_owner: 'TechVision Foundation',
+                    owner_title: 'Director',
+                    principal_name: 'John Doe',
+                    principal_email: 'john.doe@institute.ac.tz',
+                    principal_phone: '+255 785 123 456',
+                    programs_offered: 'Engineering, Information Technology, Business Management, Hospitality',
+                    total_students: '450',
+                    total_staff: '35',
+                    facility_status: 'operational',
+                    region: region?.id || '',
+                    region_obj: region ? { id: region.id, name: region.name } : null,
+                    city: city?.id || '',
+                    city_obj: city ? { id: city.id, name: city.name } : null,
+                    district: district?.id || '',
+                    district_obj: district ? { id: district.id, name: district.name } : null,
+                    ward: ward?.id || '',
+                    ward_obj: ward ? { id: ward.id, name: ward.name } : null,
+                    street: street?.id || '',
+                    street_obj: street ? { id: street.id, name: street.name } : null,
+                    street_address: street?.name || ''
+                  }));
+                  Swal.fire({ icon: 'success', title: 'Form filled!', text: 'All information has been auto-filled.' });
+                } catch (e) {
+                  // eslint-disable-next-line no-console
+                  console.error('Autofill failed', e);
+                  Swal.fire({ icon: 'error', title: 'Autofill failed', text: e.message || String(e) });
+                }
+              }}>Auto-fill sample</button>
+            </div>
           </div>
 
           <div className="progress-bar-container">
@@ -234,7 +337,7 @@ export default function Institution() {
             <span>Stage {currentStage} of {totalStages}</span>
           </div>
 
-          <form className="institution-form" onSubmit={handleSubmit}>
+          <form className="institution-form compact-form" onSubmit={handleSubmit}>
             {currentStage === 1 && (
               <div className="form-stage active">
                 <h3>Basic Information</h3>
@@ -267,18 +370,6 @@ export default function Institution() {
                       <option value="other">Other</option>
                     </select>
                     {errors.institution_type && <span className="error-message">{errors.institution_type}</span>}
-                  </div>
-                  <div className="form-group">
-                    <label>Location / City *</label>
-                    <input
-                      type="text"
-                      name="location"
-                      value={formData.location}
-                      onChange={handleChange}
-                      placeholder="Enter city/location"
-                      className={errors.location ? "error" : ""}
-                    />
-                    {errors.location && <span className="error-message">{errors.location}</span>}
                   </div>
                 </div>
               </div>
@@ -346,42 +437,115 @@ export default function Institution() {
                     placeholder="Enter phone number"
                   />
                 </div>
-                <div className="form-group">
-                  <label>Street Address *</label>
-                  <input
-                    type="text"
-                    name="street_address"
-                    value={formData.street_address}
-                    onChange={handleChange}
-                    placeholder="Enter street address"
-                    className={errors.street_address ? "error" : ""}
-                  />
-                  {errors.street_address && <span className="error-message">{errors.street_address}</span>}
-                </div>
                 <div className="form-row">
                   <div className="form-group">
                     <label>Region *</label>
-                    <input
-                      type="text"
-                      name="region"
-                      value={formData.region}
-                      onChange={handleChange}
-                      placeholder="Enter region"
-                      className={errors.region ? "error" : ""}
+                    <LocationAutocomplete
+                      level="regions"
+                      parentId={null}
+                      value={formData.region_obj}
+                      onChange={(item) => setFormData({
+                        ...formData,
+                        region_obj: item,
+                        region: item?.id ?? "",
+                        city_obj: null,
+                        city: "",
+                        district_obj: null,
+                        district: "",
+                        ward_obj: null,
+                        ward: "",
+                        street_obj: null,
+                        street: ""
+                      })}
+                      placeholder="Search region"
+                      selectOnly={true}
                     />
                     {errors.region && <span className="error-message">{errors.region}</span>}
                   </div>
                   <div className="form-group">
+                    <label>City *</label>
+                    <LocationAutocomplete
+                      level="cities"
+                      parentId={formData.region_obj?.id}
+                      value={formData.city_obj}
+                      onChange={(item) => setFormData({
+                        ...formData,
+                        city_obj: item,
+                        city: item?.id ?? "",
+                        district_obj: null,
+                        district: "",
+                        ward_obj: null,
+                        ward: "",
+                        street_obj: null,
+                        street: ""
+                      })}
+                      placeholder={formData.region_obj ? "Search city" : "Select region first"}
+                      selectOnly={true}
+                      disabled={!formData.region_obj}
+                    />
+                    {errors.city && <span className="error-message">{errors.city}</span>}
+                  </div>
+                </div>
+                <div className="form-row">
+                  <div className="form-group">
                     <label>District *</label>
-                    <input
-                      type="text"
-                      name="district"
-                      value={formData.district}
-                      onChange={handleChange}
-                      placeholder="Enter district"
-                      className={errors.district ? "error" : ""}
+                    <LocationAutocomplete
+                      level="districts"
+                      parentId={formData.city_obj?.id}
+                      value={formData.district_obj}
+                      onChange={(item) => setFormData({
+                        ...formData,
+                        district_obj: item,
+                        district: item?.id ?? "",
+                        ward_obj: null,
+                        ward: "",
+                        street_obj: null,
+                        street: ""
+                      })}
+                      placeholder={formData.city_obj ? "Search district" : "Select city first"}
+                      selectOnly={true}
+                      disabled={!formData.city_obj}
                     />
                     {errors.district && <span className="error-message">{errors.district}</span>}
+                  </div>
+                  <div className="form-group">
+                    <label>Ward *</label>
+                    <LocationAutocomplete
+                      level="wards"
+                      parentId={formData.district_obj?.id}
+                      value={formData.ward_obj}
+                      onChange={(item) => setFormData({
+                        ...formData,
+                        ward_obj: item,
+                        ward: item?.id ?? "",
+                        street_obj: null,
+                        street: ""
+                      })}
+                      placeholder={formData.district_obj ? "Search ward" : "Select district first"}
+                      selectOnly={true}
+                      disabled={!formData.district_obj}
+                    />
+                    {errors.ward && <span className="error-message">{errors.ward}</span>}
+                  </div>
+                </div>
+                <div className="form-row">
+                  <div className="form-group">
+                    <label>Street *</label>
+                    <LocationAutocomplete
+                      level="streets"
+                      parentId={formData.ward_obj?.id}
+                      value={formData.street_obj}
+                      onChange={(item) => setFormData({
+                        ...formData,
+                        street_obj: item,
+                        street: item?.id ?? "",
+                        street_address: item?.name ?? ""
+                      })}
+                      placeholder={formData.ward_obj ? "Search street" : "Select ward first"}
+                      selectOnly={true}
+                      disabled={!formData.ward_obj}
+                    />
+                    {errors.street && <span className="error-message">{errors.street}</span>}
                   </div>
                 </div>
               </div>
@@ -389,7 +553,7 @@ export default function Institution() {
             {currentStage === 3 && (
               <div className="form-stage active">
                 <h3>Programs & Facilities</h3>
-                <div className="form-group">
+                <div className="form-group full-width">
                   <label>Programs Offered *</label>
                   <textarea
                     name="programs_offered"
@@ -544,7 +708,13 @@ export default function Institution() {
                   </div>
                   <div className="form-group">
                     <label>Username</label>
-                    <input type="text" name="username" value={formData.username} readOnly />
+                    <input
+                      type="text"
+                      name="username"
+                      value={formData.username}
+                      onChange={handleChange}
+                      placeholder="Enter username"
+                    />
                   </div>
                 </div>
                 <div className="form-summary">
@@ -560,7 +730,7 @@ export default function Institution() {
                     </div>
                     <div className="summary-item">
                       <span className="label">Location:</span>
-                      <span className="value">{formData.location}</span>
+                      <span className="value">{locationSummary || formData.location}</span>
                     </div>
                     <div className="summary-item">
                       <span className="label">Principal:</span>

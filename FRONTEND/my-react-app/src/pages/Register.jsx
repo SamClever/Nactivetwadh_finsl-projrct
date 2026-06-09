@@ -132,7 +132,7 @@ export default function Register() {
           </p>
         </div>
 
-        <form onSubmit={handleSubmit}>
+        <form className="compact-form" onSubmit={handleSubmit}>
           <div className="form-group">
             <label>Email</label>
             <input
@@ -157,7 +157,7 @@ export default function Register() {
             {errors.password && <span className="error-message">{errors.password}</span>}
           </div>
 
-          <div className="form-group">
+          <div className="form-group full-width">
             <label>Confirm Password</label>
             <input
               type="password"

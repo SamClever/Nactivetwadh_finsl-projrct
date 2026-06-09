@@ -1,0 +1,157 @@
+[
+  {
+    "id": "Arusha City District Ward",
+    "name": "Arusha City District Ward",
+    "district_id": "Arusha City District"
+  },
+  {
+    "id": "Dar es Salaam City District Ward",
+    "name": "Dar es Salaam City District Ward",
+    "district_id": "Dar es Salaam City District"
+  },
+  {
+    "id": "Dodoma City District Ward",
+    "name": "Dodoma City District Ward",
+    "district_id": "Dodoma City District"
+  },
+  {
+    "id": "Geita City District Ward",
+    "name": "Geita City District Ward",
+    "district_id": "Geita City District"
+  },
+  {
+    "id": "Iringa City District Ward",
+    "name": "Iringa City District Ward",
+    "district_id": "Iringa City District"
+  },
+  {
+    "id": "Kagera City District Ward",
+    "name": "Kagera City District Ward",
+    "district_id": "Kagera City District"
+  },
+  {
+    "id": "Katavi City District Ward",
+    "name": "Katavi City District Ward",
+    "district_id": "Katavi City District"
+  },
+  {
+    "id": "Kigoma City District Ward",
+    "name": "Kigoma City District Ward",
+    "district_id": "Kigoma City District"
+  },
+  {
+    "id": "Kilimanjaro City District Ward",
+    "name": "Kilimanjaro City District Ward",
+    "district_id": "Kilimanjaro City District"
+  },
+  {
+    "id": "Lindi City District Ward",
+    "name": "Lindi City District Ward",
+    "district_id": "Lindi City District"
+  },
+  {
+    "id": "Manyara City District Ward",
+    "name": "Manyara City District Ward",
+    "district_id": "Manyara City District"
+  },
+  {
+    "id": "Mara City District Ward",
+    "name": "Mara City District Ward",
+    "district_id": "Mara City District"
+  },
+  {
+    "id": "Mbeya City District Ward",
+    "name": "Mbeya City District Ward",
+    "district_id": "Mbeya City District"
+  },
+  {
+    "id": "Morogoro City District Ward",
+    "name": "Morogoro City District Ward",
+    "district_id": "Morogoro City District"
+  },
+  {
+    "id": "Mtwara City District Ward",
+    "name": "Mtwara City District Ward",
+    "district_id": "Mtwara City District"
+  },
+  {
+    "id": "Mwanza City District Ward",
+    "name": "Mwanza City District Ward",
+    "district_id": "Mwanza City District"
+  },
+  {
+    "id": "Njombe City District Ward",
+    "name": "Njombe City District Ward",
+    "district_id": "Njombe City District"
+  },
+  {
+    "id": "Pwani City District Ward",
+    "name": "Pwani City District Ward",
+    "district_id": "Pwani City District"
+  },
+  {
+    "id": "Rukwa City District Ward",
+    "name": "Rukwa City District Ward",
+    "district_id": "Rukwa City District"
+  },
+  {
+    "id": "Ruvuma City District Ward",
+    "name": "Ruvuma City District Ward",
+    "district_id": "Ruvuma City District"
+  },
+  {
+    "id": "Shinyanga City District Ward",
+    "name": "Shinyanga City District Ward",
+    "district_id": "Shinyanga City District"
+  },
+  {
+    "id": "Simiyu City District Ward",
+    "name": "Simiyu City District Ward",
+    "district_id": "Simiyu City District"
+  },
+  {
+    "id": "Singida City District Ward",
+    "name": "Singida City District Ward",
+    "district_id": "Singida City District"
+  },
+  {
+    "id": "Songwe City District Ward",
+    "name": "Songwe City District Ward",
+    "district_id": "Songwe City District"
+  },
+  {
+    "id": "Tabora City District Ward",
+    "name": "Tabora City District Ward",
+    "district_id": "Tabora City District"
+  },
+  {
+    "id": "Tanga City District Ward",
+    "name": "Tanga City District Ward",
+    "district_id": "Tanga City District"
+  },
+  {
+    "id": "Zanzibar North City District Ward",
+    "name": "Zanzibar North City District Ward",
+    "district_id": "Zanzibar North City District"
+  },
+  {
+    "id": "Zanzibar South and Central City District Ward",
+    "name": "Zanzibar South and Central City District Ward",
+    "district_id": "Zanzibar South and Central City District"
+  },
+  {
+    "id": "Zanzibar Urban West City District Ward",
+    "name": "Zanzibar Urban West City District Ward",
+    "district_id": "Zanzibar Urban West City District"
+  },
+  {
+    "id": "Pemba North City District Ward",
+    "name": "Pemba North City District Ward",
+    "district_id": "Pemba North City District"
+  },
+  {
+    "id": "Pemba South City District Ward",
+    "name": "Pemba South City District Ward",
+    "district_id": "Pemba South City District"
+  }
+]

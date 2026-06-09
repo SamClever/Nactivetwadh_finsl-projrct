@@ -1,0 +1,126 @@
+[
+  {
+    "id": "Arusha",
+    "name": "Arusha"
+  },
+  {
+    "id": "Dar es Salaam",
+    "name": "Dar es Salaam"
+  },
+  {
+    "id": "Dodoma",
+    "name": "Dodoma"
+  },
+  {
+    "id": "Geita",
+    "name": "Geita"
+  },
+  {
+    "id": "Iringa",
+    "name": "Iringa"
+  },
+  {
+    "id": "Kagera",
+    "name": "Kagera"
+  },
+  {
+    "id": "Katavi",
+    "name": "Katavi"
+  },
+  {
+    "id": "Kigoma",
+    "name": "Kigoma"
+  },
+  {
+    "id": "Kilimanjaro",
+    "name": "Kilimanjaro"
+  },
+  {
+    "id": "Lindi",
+    "name": "Lindi"
+  },
+  {
+    "id": "Manyara",
+    "name": "Manyara"
+  },
+  {
+    "id": "Mara",
+    "name": "Mara"
+  },
+  {
+    "id": "Mbeya",
+    "name": "Mbeya"
+  },
+  {
+    "id": "Morogoro",
+    "name": "Morogoro"
+  },
+  {
+    "id": "Mtwara",
+    "name": "Mtwara"
+  },
+  {
+    "id": "Mwanza",
+    "name": "Mwanza"
+  },
+  {
+    "id": "Njombe",
+    "name": "Njombe"
+  },
+  {
+    "id": "Pwani",
+    "name": "Pwani"
+  },
+  {
+    "id": "Rukwa",
+    "name": "Rukwa"
+  },
+  {
+    "id": "Ruvuma",
+    "name": "Ruvuma"
+  },
+  {
+    "id": "Shinyanga",
+    "name": "Shinyanga"
+  },
+  {
+    "id": "Simiyu",
+    "name": "Simiyu"
+  },
+  {
+    "id": "Singida",
+    "name": "Singida"
+  },
+  {
+    "id": "Songwe",
+    "name": "Songwe"
+  },
+  {
+    "id": "Tabora",
+    "name": "Tabora"
+  },
+  {
+    "id": "Tanga",
+    "name": "Tanga"
+  },
+  {
+    "id": "Zanzibar North",
+    "name": "Zanzibar North"
+  },
+  {
+    "id": "Zanzibar South and Central",
+    "name": "Zanzibar South and Central"
+  },
+  {
+    "id": "Zanzibar Urban West",
+    "name": "Zanzibar Urban West"
+  },
+  {
+    "id": "Pemba North",
+    "name": "Pemba North"
+  },
+  {
+    "id": "Pemba South",
+    "name": "Pemba South"
+  }
+]

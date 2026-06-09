@@ -757,7 +757,7 @@ export default function Documents() {
 
           <form
 
-            className="documents-form"
+            className="documents-form compact-form"
 
             onSubmit={handleSubmit}
 

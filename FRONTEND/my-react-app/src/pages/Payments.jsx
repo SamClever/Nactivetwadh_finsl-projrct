@@ -206,7 +206,7 @@ export default function Payments() {
               <h3>Generate Control Number</h3>
               <p>Select the application and let the system assign the payment reference and amount.</p>
 
-              <form className="form-stack" onSubmit={handleGenerateControlNumber}>
+              <form className="form-stack compact-form" onSubmit={handleGenerateControlNumber}>
                 <label>
                   Application reference
                   <select value={selectedApplication} onChange={(e) => setSelectedApplication(e.target.value)}>
@@ -251,7 +251,7 @@ export default function Payments() {
               <h3>Lookup payment</h3>
               <p>Search a generated Control Number to load automatic payment details.</p>
 
-              <form className="form-stack" onSubmit={handleSearchPayment}>
+              <form className="form-stack compact-form" onSubmit={handleSearchPayment}>
                 <label>
                   Control Number
                   <input

@@ -1,21 +1,34 @@
 import { Navigate } from "react-router-dom";
 
-export default function ProtectedRoute({
-  children
-}) {
+export default function ProtectedRoute({ children }) {
 
-  const token = localStorage.getItem("token");
-  const user = (() => {
+  // Read and normalise token
+  const rawToken = localStorage.getItem("token");
+  const token = typeof rawToken === 'string' && rawToken.trim()
+    ? rawToken.trim().replace(/^\"|\"$/g, '')
+    : null;
+
+  // Read and parse user safely
+  let user = null;
+  const rawUser = localStorage.getItem("user");
+  if (rawUser) {
     try {
-      return JSON.parse(localStorage.getItem("user"));
-    } catch {
-      return null;
+      user = typeof rawUser === 'string' ? JSON.parse(rawUser) : rawUser;
+    } catch (e) {
+      try {
+        // strip accidental surrounding quotes and retry
+        user = JSON.parse(rawUser.replace(/^\"|\"$/g, ''));
+      } catch (e2) {
+        user = null;
+      }
     }
-  })();
+  }
 
-  // Require BOTH token and user to be present
-  return (token && user)
-    ? children
-    : <Navigate to="/" replace />;
+  // Debug logs to help trace why redirection might fail
+  try {
+    console.debug('ProtectedRoute check: token=', token ? token.substring(0,20)+'...' : token, 'user=', user);
+  } catch (_) {}
+
+  return (token && user) ? children : <Navigate to="/" replace />;
 
 }

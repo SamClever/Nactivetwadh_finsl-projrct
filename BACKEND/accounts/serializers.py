@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.hashers import make_password
 
-
 from .models import User, Institution ,Application,  Document,Payment,PaymentAuditLog,Review, InspectionTeam, TeamMember,  InspectionForm,  FormQuestion,    Inspection,  InspectionResponse,  Certificate
 
    
@@ -18,27 +17,63 @@ class UserSerializer(serializers.ModelSerializer):
 
 class InstitutionSerializer(serializers.ModelSerializer):
 
-    username=serializers.CharField(
+    username = serializers.CharField(
         source='user.username',
         read_only=True
     )
 
-    email=serializers.EmailField(
+    email = serializers.EmailField(
         source='user.email',
         read_only=True
     )
 
-    phone=serializers.CharField(
+    phone = serializers.CharField(
         source='user.phone',
         read_only=True
     )
 
+    region_obj = serializers.SerializerMethodField()
+    city_obj = serializers.SerializerMethodField()
+    district_obj = serializers.SerializerMethodField()
+    ward_obj = serializers.SerializerMethodField()
+    street_obj = serializers.SerializerMethodField()
+
+    region = serializers.CharField(allow_null=True, allow_blank=True, required=False)
+    city = serializers.CharField(allow_null=True, allow_blank=True, required=False)
+    district = serializers.CharField(allow_null=True, allow_blank=True, required=False)
+    ward = serializers.CharField(allow_null=True, allow_blank=True, required=False)
+    street = serializers.CharField(allow_null=True, allow_blank=True, required=False)
+
+    def get_region_obj(self, obj):
+        if not obj.region:
+            return None
+        return {'id': obj.region, 'name': obj.region}
+
+    def get_city_obj(self, obj):
+        if not obj.city:
+            return None
+        return {'id': obj.city, 'name': obj.city}
+
+    def get_district_obj(self, obj):
+        if not obj.district:
+            return None
+        return {'id': obj.district, 'name': obj.district}
+
+    def get_ward_obj(self, obj):
+        if not obj.ward:
+            return None
+        return {'id': obj.ward, 'name': obj.ward}
+
+    def get_street_obj(self, obj):
+        if not obj.street:
+            return None
+        return {'id': obj.street, 'name': obj.street}
+
     class Meta:
 
-        model=Institution
+        model = Institution
 
-        fields=[
-
+        fields = [
             'id',
             'institution_name',
             'institution_type',
@@ -52,7 +87,15 @@ class InstitutionSerializer(serializers.ModelSerializer):
             'street_address',
             'location',
             'region',
+            'region_obj',
+            'city',
+            'city_obj',
             'district',
+            'district_obj',
+            'ward',
+            'ward_obj',
+            'street',
+            'street_obj',
             'programs_offered',
             'total_students',
             'total_staff',
@@ -68,7 +111,6 @@ class InstitutionSerializer(serializers.ModelSerializer):
             'phone',
             'created_at',
             'updated_at'
-
         ]
 class RegisterSerializer(serializers.Serializer):
 

@@ -1,0 +1,157 @@
+[
+  {
+    "id": "Arusha City District",
+    "name": "Arusha City District",
+    "city_id": "Arusha City"
+  },
+  {
+    "id": "Dar es Salaam City District",
+    "name": "Dar es Salaam City District",
+    "city_id": "Dar es Salaam City"
+  },
+  {
+    "id": "Dodoma City District",
+    "name": "Dodoma City District",
+    "city_id": "Dodoma City"
+  },
+  {
+    "id": "Geita City District",
+    "name": "Geita City District",
+    "city_id": "Geita City"
+  },
+  {
+    "id": "Iringa City District",
+    "name": "Iringa City District",
+    "city_id": "Iringa City"
+  },
+  {
+    "id": "Kagera City District",
+    "name": "Kagera City District",
+    "city_id": "Kagera City"
+  },
+  {
+    "id": "Katavi City District",
+    "name": "Katavi City District",
+    "city_id": "Katavi City"
+  },
+  {
+    "id": "Kigoma City District",
+    "name": "Kigoma City District",
+    "city_id": "Kigoma City"
+  },
+  {
+    "id": "Kilimanjaro City District",
+    "name": "Kilimanjaro City District",
+    "city_id": "Kilimanjaro City"
+  },
+  {
+    "id": "Lindi City District",
+    "name": "Lindi City District",
+    "city_id": "Lindi City"
+  },
+  {
+    "id": "Manyara City District",
+    "name": "Manyara City District",
+    "city_id": "Manyara City"
+  },
+  {
+    "id": "Mara City District",
+    "name": "Mara City District",
+    "city_id": "Mara City"
+  },
+  {
+    "id": "Mbeya City District",
+    "name": "Mbeya City District",
+    "city_id": "Mbeya City"
+  },
+  {
+    "id": "Morogoro City District",
+    "name": "Morogoro City District",
+    "city_id": "Morogoro City"
+  },
+  {
+    "id": "Mtwara City District",
+    "name": "Mtwara City District",
+    "city_id": "Mtwara City"
+  },
+  {
+    "id": "Mwanza City District",
+    "name": "Mwanza City District",
+    "city_id": "Mwanza City"
+  },
+  {
+    "id": "Njombe City District",
+    "name": "Njombe City District",
+    "city_id": "Njombe City"
+  },
+  {
+    "id": "Pwani City District",
+    "name": "Pwani City District",
+    "city_id": "Pwani City"
+  },
+  {
+    "id": "Rukwa City District",
+    "name": "Rukwa City District",
+    "city_id": "Rukwa City"
+  },
+  {
+    "id": "Ruvuma City District",
+    "name": "Ruvuma City District",
+    "city_id": "Ruvuma City"
+  },
+  {
+    "id": "Shinyanga City District",
+    "name": "Shinyanga City District",
+    "city_id": "Shinyanga City"
+  },
+  {
+    "id": "Simiyu City District",
+    "name": "Simiyu City District",
+    "city_id": "Simiyu City"
+  },
+  {
+    "id": "Singida City District",
+    "name": "Singida City District",
+    "city_id": "Singida City"
+  },
+  {
+    "id": "Songwe City District",
+    "name": "Songwe City District",
+    "city_id": "Songwe City"
+  },
+  {
+    "id": "Tabora City District",
+    "name": "Tabora City District",
+    "city_id": "Tabora City"
+  },
+  {
+    "id": "Tanga City District",
+    "name": "Tanga City District",
+    "city_id": "Tanga City"
+  },
+  {
+    "id": "Zanzibar North City District",
+    "name": "Zanzibar North City District",
+    "city_id": "Zanzibar North City"
+  },
+  {
+    "id": "Zanzibar South and Central City District",
+    "name": "Zanzibar South and Central City District",
+    "city_id": "Zanzibar South and Central City"
+  },
+  {
+    "id": "Zanzibar Urban West City District",
+    "name": "Zanzibar Urban West City District",
+    "city_id": "Zanzibar Urban West City"
+  },
+  {
+    "id": "Pemba North City District",
+    "name": "Pemba North City District",
+    "city_id": "Pemba North City"
+  },
+  {
+    "id": "Pemba South City District",
+    "name": "Pemba South City District",
+    "city_id": "Pemba South City"
+  }
+]

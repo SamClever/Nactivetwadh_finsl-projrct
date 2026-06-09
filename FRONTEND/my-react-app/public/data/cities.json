@@ -1,0 +1,157 @@
+[
+  {
+    "id": "Arusha City",
+    "name": "Arusha City",
+    "region_id": "Arusha"
+  },
+  {
+    "id": "Dar es Salaam City",
+    "name": "Dar es Salaam City",
+    "region_id": "Dar es Salaam"
+  },
+  {
+    "id": "Dodoma City",
+    "name": "Dodoma City",
+    "region_id": "Dodoma"
+  },
+  {
+    "id": "Geita City",
+    "name": "Geita City",
+    "region_id": "Geita"
+  },
+  {
+    "id": "Iringa City",
+    "name": "Iringa City",
+    "region_id": "Iringa"
+  },
+  {
+    "id": "Kagera City",
+    "name": "Kagera City",
+    "region_id": "Kagera"
+  },
+  {
+    "id": "Katavi City",
+    "name": "Katavi City",
+    "region_id": "Katavi"
+  },
+  {
+    "id": "Kigoma City",
+    "name": "Kigoma City",
+    "region_id": "Kigoma"
+  },
+  {
+    "id": "Kilimanjaro City",
+    "name": "Kilimanjaro City",
+    "region_id": "Kilimanjaro"
+  },
+  {
+    "id": "Lindi City",
+    "name": "Lindi City",
+    "region_id": "Lindi"
+  },
+  {
+    "id": "Manyara City",
+    "name": "Manyara City",
+    "region_id": "Manyara"
+  },
+  {
+    "id": "Mara City",
+    "name": "Mara City",
+    "region_id": "Mara"
+  },
+  {
+    "id": "Mbeya City",
+    "name": "Mbeya City",
+    "region_id": "Mbeya"
+  },
+  {
+    "id": "Morogoro City",
+    "name": "Morogoro City",
+    "region_id": "Morogoro"
+  },
+  {
+    "id": "Mtwara City",
+    "name": "Mtwara City",
+    "region_id": "Mtwara"
+  },
+  {
+    "id": "Mwanza City",
+    "name": "Mwanza City",
+    "region_id": "Mwanza"
+  },
+  {
+    "id": "Njombe City",
+    "name": "Njombe City",
+    "region_id": "Njombe"
+  },
+  {
+    "id": "Pwani City",
+    "name": "Pwani City",
+    "region_id": "Pwani"
+  },
+  {
+    "id": "Rukwa City",
+    "name": "Rukwa City",
+    "region_id": "Rukwa"
+  },
+  {
+    "id": "Ruvuma City",
+    "name": "Ruvuma City",
+    "region_id": "Ruvuma"
+  },
+  {
+    "id": "Shinyanga City",
+    "name": "Shinyanga City",
+    "region_id": "Shinyanga"
+  },
+  {
+    "id": "Simiyu City",
+    "name": "Simiyu City",
+    "region_id": "Simiyu"
+  },
+  {
+    "id": "Singida City",
+    "name": "Singida City",
+    "region_id": "Singida"
+  },
+  {
+    "id": "Songwe City",
+    "name": "Songwe City",
+    "region_id": "Songwe"
+  },
+  {
+    "id": "Tabora City",
+    "name": "Tabora City",
+    "region_id": "Tabora"
+  },
+  {
+    "id": "Tanga City",
+    "name": "Tanga City",
+    "region_id": "Tanga"
+  },
+  {
+    "id": "Zanzibar North City",
+    "name": "Zanzibar North City",
+    "region_id": "Zanzibar North"
+  },
+  {
+    "id": "Zanzibar South and Central City",
+    "name": "Zanzibar South and Central City",
+    "region_id": "Zanzibar South and Central"
+  },
+  {
+    "id": "Zanzibar Urban West City",
+    "name": "Zanzibar Urban West City",
+    "region_id": "Zanzibar Urban West"
+  },
+  {
+    "id": "Pemba North City",
+    "name": "Pemba North City",
+    "region_id": "Pemba North"
+  },
+  {
+    "id": "Pemba South City",
+    "name": "Pemba South City",
+    "region_id": "Pemba South"
+  }
+]

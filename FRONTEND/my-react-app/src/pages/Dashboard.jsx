@@ -25,17 +25,20 @@ export default function Dashboard() {
   }, []);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      fetchApplications();
-      fetchDocuments();
-    }
+      const token = (localStorage.getItem('token') || "").trim().replace(/^\"|\"$/g, "");
+      if (token) {
+        // ensure axios default header is set
+        try { axios.defaults.headers.common['Authorization'] = `Bearer ${token}`; } catch (e) {}
+        fetchApplications();
+        fetchDocuments();
+      }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchApplications = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = (localStorage.getItem('token') || "").trim().replace(/^\"|\"$/g, "");
+        console.debug('fetchApplications using token:', token ? token.substring(0,20)+'...' : token);
       
       const res = await axios.get('http://127.0.0.1:8000/api/applications/', {
         headers: {
@@ -46,11 +49,10 @@ export default function Dashboard() {
 
       setApplications(res.data || []);
     } catch (err) {
-      if (err?.response?.status === 401) {
-        localStorage.clear();
-        navigate('/');
-      }
-      console.error('Applications error', err?.response || err);
+        console.error('Applications error', err?.response || err);
+        try {
+          console.debug('Applications error response data/status:', err?.response?.data, err?.response?.status);
+        } catch (e) {}
     } finally {
       setLoading(false);
     }
@@ -58,7 +60,8 @@ export default function Dashboard() {
 
   const fetchDocuments = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = (localStorage.getItem('token') || "").trim().replace(/^\"|\"$/g, "");
+      console.debug('fetchDocuments using token:', token ? token.substring(0,20)+'...' : token);
       const res = await axios.get('http://127.0.0.1:8000/api/documents/', {
         headers: {
           Authorization: 'Bearer ' + token,
@@ -69,6 +72,7 @@ export default function Dashboard() {
       setDocuments(res.data || []);
     } catch (err) {
       console.error('Documents error', err?.response || err);
+      try { console.debug('Documents error response data/status:', err?.response?.data, err?.response?.status); } catch (e) {}
     }
   };
 

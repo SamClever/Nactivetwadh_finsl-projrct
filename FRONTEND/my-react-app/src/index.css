@@ -56,6 +56,83 @@ body {
   margin: 0;
 }
 
+/* Universal two-column form layout: places form fields in two columns
+   and falls back to single-column on narrow viewports. Use the
+   `full-width` helper on a form-group to force a field to span both
+   columns. */
+form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 14px; /* slightly tighter */
+  row-gap: 12px; /* reduce vertical spacing to show more fields */
+  align-items: start;
+  grid-auto-flow: row; /* natural left-to-right, top-to-bottom placement */
+  grid-auto-rows: minmax(min-content, max-content);
+  grid-auto-columns: 1fr;
+  gap: 12px 14px;
+  grid-auto-flow: dense; /* fill available slots when possible */
+}
+
+/* Allow existing wrapper elements like .form-row to be transparent
+   so their children participate directly in the form grid. */
+.form-row {
+  display: contents;
+}
+
+/* Allow stage wrapper to be transparent so its child fields flow into the form grid.
+   Keep the stage header spanning both columns. */
+.form-stage {
+  display: contents;
+}
+
+.form-stage h3 {
+  grid-column: 1 / -1;
+  margin: 0 0 8px 0;
+}
+
+/* Compact variant: apply to forms that should be denser (use class "compact-form") */
+.compact-form {
+  column-gap: 10px;
+  row-gap: 8px;
+  gap: 8px 10px;
+}
+
+/* Reduce input padding in compact forms to allow 4-6 inputs visible */
+.compact-form .form-group input,
+.compact-form .form-group select,
+.compact-form .form-group textarea {
+  padding: 8px 10px;
+  height: 40px;
+  font-size: 13px;
+  border-radius: 8px;
+}
+
+form .form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Helpers: full-width fields (textareas, summary blocks, buttons) */
+.full-width,
+form textarea,
+form .form-summary,
+form .form-navigation,
+form button[type="submit"],
+form .register-btn,
+form .login-btn,
+form .primary-button,
+form .secondary-button,
+form .btn-submit {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 768px) {
+  form {
+    grid-template-columns: 1fr;
+    column-gap: 0;
+  }
+}
+
 #root {
   width: 100%;
   max-width: 100%;

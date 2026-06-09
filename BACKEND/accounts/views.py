@@ -51,6 +51,52 @@ DEFAULT_PAYMENT_AMOUNT = 100000
 logger = logging.getLogger(__name__)
 
 
+def get_authorization_header(request):
+    """Return the Authorization header from the request.
+
+    Some server setups populate Authorization in request.META under
+    HTTP_AUTHORIZATION or Authorization, while others expose it via
+    request.headers.
+    """
+    auth_header = None
+
+    if hasattr(request, 'headers'):
+        auth_header = request.headers.get('Authorization')
+
+    if not auth_header:
+        auth_header = request.META.get('HTTP_AUTHORIZATION') or request.META.get('Authorization')
+
+    if isinstance(auth_header, bytes):
+        auth_header = auth_header.decode('utf-8', errors='ignore')
+
+    return auth_header.strip() if auth_header else None
+
+
+def get_bearer_token(request):
+    auth_header = get_authorization_header(request)
+    if not auth_header:
+        return None
+
+    auth_header = auth_header.strip()
+    if auth_header.lower().startswith('bearer '):
+        return auth_header[7:].strip()
+
+    return auth_header
+
+
+def get_authenticated_user(request):
+    token = get_bearer_token(request)
+    if not token:
+        raise ValueError('Missing authorization token')
+
+    decoded = AccessToken(token)
+    user_id = decoded.get('user_id')
+    if not user_id:
+        raise ValueError('Invalid token payload')
+
+    return User.objects.get(id=user_id)
+
+
 # =========================================
 # GENERIC CRUD API
 # =========================================
@@ -175,14 +221,7 @@ def manage_institutions(request, pk=None):
     # GET - list all or retrieve one
     if request.method=="GET":
         try:
-            auth_header=request.headers.get("Authorization")
-            if not auth_header:
-                return Response({"error":"No Authorization header"}, status=401)
-
-            token=auth_header.split(" ")[1]
-            decoded=AccessToken(token)
-            user_id=decoded["user_id"]
-            user=User.objects.get(id=user_id)
+            user = get_authenticated_user(request)
         except Exception as e:
             return Response({"error": str(e)}, status=401)
 
@@ -204,14 +243,7 @@ def manage_institutions(request, pk=None):
     # POST - create new institution (requires auth to set user)
     elif request.method=="POST":
         try:
-            auth_header=request.headers.get("Authorization")
-            if not auth_header:
-                return Response({"error":"No Authorization header"}, status=401)
-            
-            token=auth_header.split(" ")[1]
-            decoded=AccessToken(token)
-            user_id=decoded["user_id"]
-            user=User.objects.get(id=user_id)
+            user = get_authenticated_user(request)
         except Exception as e:
             return Response({"error": str(e)}, status=401)
         
@@ -332,12 +364,8 @@ def login(request):
 
         if matched:
 
-            refresh=RefreshToken()
-
-            refresh["user_id"]=user.id
-
-            refresh["username"]=user.username
-
+            refresh = RefreshToken.for_user(user)
+            refresh["username"] = user.username
 
             return Response({
 
@@ -410,75 +438,8 @@ def manage_applications(request,pk=None):
 
 
     try:
-
-        auth_header=request.headers.get(
-            "Authorization"
-        )
-
-
-        print(
-            "HEADER:",
-            auth_header
-        )
-
-
-        if auth_header is None:
-
-            return Response(
-
-                {
-
-                "error":
-                "No Authorization header"
-
-                },
-
-                status=401
-
-            )
-
-
-        token=auth_header.split(
-            " "
-        )[1]
-
-
-        print(
-            "TOKEN:",
-            token
-        )
-
-
-        decoded=AccessToken(
-            token
-        )
-
-
-        print(
-            "DECODED:",
-            decoded
-        )
-
-
-        user_id=decoded["user_id"]
-
-
-        user=User.objects.get(
-            id=user_id
-        )
-
-
-        institution=Institution.objects.get(
-            user=user
-        )
-
-
-        print(
-            "USER:",
-            user.username
-        )
-
-
+        user = get_authenticated_user(request)
+        institution = Institution.objects.get(user=user)
     except Exception as e:
 
         print(
@@ -696,44 +657,8 @@ def manage_applications(request,pk=None):
 def manage_documents(request,pk=None):
 
     try:
-
-        auth_header=request.headers.get(
-            "Authorization"
-        )
-
-        if not auth_header:
-
-            return Response(
-
-                {
-                    "error":"No token"
-                },
-
-                status=401
-            )
-
-
-        token=auth_header.split(
-            " "
-        )[1]
-
-
-        decoded=AccessToken(token)
-
-
-        user_id=decoded["user_id"]
-
-
-        user=User.objects.get(
-            id=user_id
-        )
-
-
-        institution=Institution.objects.get(
-            user=user
-        )
-
-
+        user = get_authenticated_user(request)
+        institution = Institution.objects.get(user=user)
     except Exception as e:
 
         print(
@@ -1129,50 +1054,9 @@ def manage_payments(request, pk=None):
     # =========================
     # AUTHENTICATION
     # =========================
-
     try:
-
-        auth_header = request.headers.get(
-            "Authorization"
-        )
-
-
-        if not auth_header:
-
-            return Response(
-
-                {
-                    "error": "No token"
-                },
-
-                status=401
-
-            )
-
-
-        token = auth_header.split(
-            " "
-        )[1]
-
-
-        decoded = AccessToken(
-            token
-        )
-
-
-        user_id = decoded["user_id"]
-
-
-        user = User.objects.get(
-            id=user_id
-        )
-
-
-        institution = Institution.objects.get(
-            user=user
-        )
-
-
+        user = get_authenticated_user(request)
+        institution = Institution.objects.get(user=user)
     except Exception as e:
 
         print(
