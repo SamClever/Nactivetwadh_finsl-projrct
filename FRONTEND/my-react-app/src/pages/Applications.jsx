@@ -697,37 +697,21 @@ export default function Applications() {
 
           {/* HEADER */}
 
-          <div className="application-header">
+          {/* <div className="application-header">
 
-            <h1>
-
-              {
-
-                editingId
-
-                  ?
-
-                  "Edit Application"
-
-                  :
-
-                  "Create Application"
-
-              }
-
-            </h1>
+           
 
 
 
-            <p>
+            {/* <p>
 
               Submit registration,
               accreditation or renewal
               application.
 
-            </p>
-
-          </div>
+            </p> */}
+{/* 
+          </div> */}
 
 
           {/* FORM */}

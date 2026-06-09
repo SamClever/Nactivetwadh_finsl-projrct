@@ -259,75 +259,10 @@ export default function Institution() {
       <div className="dashboard-main">
         <Topbar />
         <div className="institution-container">
-          <div className="institution-header">
+          {/* <div className="institution-header">
             <h1>Institution Profile</h1>
             <p>Manage institution account and profile information</p>
-            <div style={{ marginTop: 12 }}>
-              <button type="button" className="btn-small" onClick={async () => {
-                try {
-                  // eslint-disable-next-line no-console
-                  console.log('Auto-fill button clicked');
-
-                  const apiBase = 'http://127.0.0.1:8000/api/locations';
-                  const regionsRes = await axios.get(`${apiBase}/regions/`, { params: { page_size: 25 } });
-                  const region = regionsRes.data.results?.[0] || regionsRes.data[0] || null;
-
-                  const citiesRes = region
-                    ? await axios.get(`${apiBase}/cities/`, { params: { region: region.id, page_size: 25 } })
-                    : { data: [] };
-                  const city = citiesRes.data.results?.[0] || citiesRes.data[0] || null;
-
-                  const districtsRes = city
-                    ? await axios.get(`${apiBase}/districts/`, { params: { city: city.id, page_size: 25 } })
-                    : { data: [] };
-                  const district = districtsRes.data.results?.[0] || districtsRes.data[0] || null;
-
-                  const wardsRes = district
-                    ? await axios.get(`${apiBase}/wards/`, { params: { district: district.id, page_size: 25 } })
-                    : { data: [] };
-                  const ward = wardsRes.data.results?.[0] || wardsRes.data[0] || null;
-
-                  const streetsRes = ward
-                    ? await axios.get(`${apiBase}/streets/`, { params: { ward: ward.id, page_size: 25 } })
-                    : { data: [] };
-                  const street = streetsRes.data.results?.[0] || streetsRes.data[0] || null;
-
-                  setFormData((prev) => ({
-                    ...prev,
-                    institution_name: 'Sample Institute of Technology',
-                    institution_type: 'technical',
-                    registration_number: 'REG-2024-001',
-                    certificate_number: 'CERT-2024-001',
-                    institution_owner: 'TechVision Foundation',
-                    owner_title: 'Director',
-                    principal_name: 'John Doe',
-                    principal_email: 'john.doe@institute.ac.tz',
-                    principal_phone: '+255 785 123 456',
-                    programs_offered: 'Engineering, Information Technology, Business Management, Hospitality',
-                    total_students: '450',
-                    total_staff: '35',
-                    facility_status: 'operational',
-                    region: region?.id || '',
-                    region_obj: region ? { id: region.id, name: region.name } : null,
-                    city: city?.id || '',
-                    city_obj: city ? { id: city.id, name: city.name } : null,
-                    district: district?.id || '',
-                    district_obj: district ? { id: district.id, name: district.name } : null,
-                    ward: ward?.id || '',
-                    ward_obj: ward ? { id: ward.id, name: ward.name } : null,
-                    street: street?.id || '',
-                    street_obj: street ? { id: street.id, name: street.name } : null,
-                    street_address: street?.name || ''
-                  }));
-                  Swal.fire({ icon: 'success', title: 'Form filled!', text: 'All information has been auto-filled.' });
-                } catch (e) {
-                  // eslint-disable-next-line no-console
-                  console.error('Autofill failed', e);
-                  Swal.fire({ icon: 'error', title: 'Autofill failed', text: e.message || String(e) });
-                }
-              }}>Auto-fill sample</button>
-            </div>
-          </div>
+          </div> */}
 
           <div className="progress-bar-container">
             <div className="progress-bar-fill" style={{ width: `${progress}%` }}></div>
