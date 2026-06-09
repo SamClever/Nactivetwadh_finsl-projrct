@@ -1,6 +1,6 @@
 ﻿import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Swal from "sweetalert2";
+import { showSuccess, showError } from "../services/alertService";
 import "../styles/Register.css";
 
 export default function Register() {
@@ -72,19 +72,11 @@ export default function Register() {
       console.log("REGISTER RESPONSE:", data);
 
       if (response.ok) {
-        await Swal.fire({
-          icon: "success",
-          title: "Registration successful",
-          text: "You can now sign in using your email and password.",
-          timer: 1500,
-          showConfirmButton: false,
-          width: "320px",
-          customClass: {
-            popup: "small-round-alert",
-            title: "alert-title",
-            htmlContainer: "alert-text",
-          },
-        });
+        await showSuccess(
+          "Registration successful",
+          "You can now sign in using your email and password.",
+          1500
+        );
 
         navigate("/");
       } else {
@@ -96,27 +88,11 @@ export default function Register() {
           data.error ||
           "Registration failed";
 
-        Swal.fire({
-          icon: "error",
-          title: "Registration Failed",
-          text: errorMessage,
-          width: "320px",
-          customClass: {
-            popup: "small-round-alert",
-          },
-        });
+        await showError("Registration Failed", errorMessage);
       }
     } catch (error) {
       console.log("REGISTER ERROR:", error);
-      Swal.fire({
-        icon: "error",
-        title: "Server Error",
-        text: "Something went wrong",
-        width: "320px",
-        customClass: {
-          popup: "small-round-alert",
-        },
-      });
+      await showError("Server Error", "Something went wrong");
     }
   };
 

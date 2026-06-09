@@ -1,0 +1,80 @@
+/* Shared SweetAlert2 theme */
+.swal-alert-popup {
+  border-radius: 24px !important;
+  padding: 28px !important;
+  min-width: 320px !important;
+  max-width: 460px !important;
+  background: linear-gradient(180deg, #ffffff 0%, #eef6ff 100%) !important;
+  border: 1px solid rgba(59, 130, 246, 0.16) !important;
+  box-shadow: 0 24px 80px rgba(15, 23, 42, 0.16) !important;
+  color: #0f172a !important;
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+}
+
+.swal-alert-title {
+  font-size: 20px !important;
+  font-weight: 800 !important;
+  color: #0f172a !important;
+  margin-bottom: 8px !important;
+}
+
+.swal-alert-text {
+  font-size: 15px !important;
+  color: #475569 !important;
+  line-height: 1.7 !important;
+  margin: 0 !important;
+}
+
+.swal-alert-confirm,
+.swal-alert-cancel {
+  border-radius: 14px !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  padding: 12px 22px !important;
+  min-height: 44px !important;
+}
+
+.swal-alert-confirm {
+  color: #ffffff !important;
+  background: linear-gradient(135deg, #14b8a6 0%, #2563eb 100%) !important;
+  border: none !important;
+  box-shadow: 0 12px 28px rgba(37, 99, 235, 0.22) !important;
+}
+
+.swal-alert-cancel {
+  color: #0f172a !important;
+  background: rgba(15, 23, 42, 0.06) !important;
+  border: none !important;
+}
+
+.swal-alert-toast {
+  border-radius: 16px !important;
+  padding: 16px 20px !important;
+  min-width: 260px !important;
+  background: rgba(255, 255, 255, 0.96) !important;
+  border: 1px solid rgba(59, 130, 246, 0.2) !important;
+  box-shadow: 0 18px 48px rgba(15, 23, 42, 0.18) !important;
+}
+
+.swal-alert-toast-title {
+  color: #0f172a !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+}
+
+.swal2-icon {
+  box-shadow: none !important;
+  border: none !important;
+}
+
+.swal2-icon-success {
+  color: #16a34a !important;
+}
+
+.swal2-icon-error {
+  color: #dc2626 !important;
+}
+
+.swal2-icon-warning {
+  color: #f59e0b !important;
+}

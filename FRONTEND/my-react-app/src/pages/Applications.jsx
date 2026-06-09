@@ -4,7 +4,7 @@ import axios from "axios";
 import Sidebar from "../components/Sidebar";
 import Topbar from "../components/Topbar";
 
-import Swal from "sweetalert2";
+import { showSuccess, showError, showWarning } from "../services/alertService";
 
 import "../styles/Applications.css";
 
@@ -421,39 +421,11 @@ export default function Applications() {
 
 
 
-        /* =========================
-           SUCCESS ALERT
-        ========================= */
-
-        await Swal.fire({
-
-          icon: "success",
-
-          title:
-
-            editingId
-
-              ?
-
-              "Application Updated"
-
-              :
-
-              "Application Submitted",
-
-          timer: 1500,
-
-          showConfirmButton: false,
-
-          customClass: {
-
-            popup: "round-popup",
-
-            title: "round-title"
-
-          }
-
-        });
+        await showSuccess(
+          editingId ? "Application Updated" : "Application Submitted",
+          "",
+          1500
+        );
 
 
 
@@ -473,32 +445,10 @@ export default function Applications() {
 
 
 
-        Swal.fire({
-
-          icon: "error",
-
-          title: "Failed",
-
-          text:
-
-            error.response?.data?.error
-
-            ||
-
-            "Operation failed",
-
-          customClass: {
-
-            popup: "round-popup",
-
-            title: "round-title",
-
-            confirmButton:
-              "round-confirm"
-
-          }
-
-        });
+        await showError(
+          "Failed",
+          error.response?.data?.error || "Operation failed"
+        );
 
       }
 
@@ -521,46 +471,12 @@ export default function Applications() {
 
 
 
-      const result =
-        await Swal.fire({
-
-          title:
-            "Delete application?",
-
-          text:
-            "This action cannot be undone",
-
-          icon:
-            "warning",
-
-          showCancelButton: true,
-
-          confirmButtonText:
-            "Delete",
-
-          cancelButtonText:
-            "Cancel",
-
-          confirmButtonColor:
-            "#dc2626",
-
-          customClass: {
-
-            popup:
-              "round-popup",
-
-            title:
-              "round-title",
-
-            confirmButton:
-              "round-confirm",
-
-            cancelButton:
-              "round-cancel"
-
-          }
-
-        });
+      const result = await showWarning(
+        "Delete application?",
+        "This action cannot be undone",
+        "Delete",
+        "Cancel"
+      );
 
 
 
@@ -604,27 +520,7 @@ export default function Applications() {
 
 
 
-        await Swal.fire({
-
-          icon: "success",
-
-          title: "Deleted",
-
-          timer: 1200,
-
-          showConfirmButton: false,
-
-          customClass: {
-
-            popup:
-              "round-popup",
-
-            title:
-              "round-title"
-
-          }
-
-        });
+        await showSuccess("Deleted", "", 1200);
 
 
 
@@ -642,29 +538,7 @@ export default function Applications() {
 
 
 
-        Swal.fire({
-
-          icon: "error",
-
-          title: "Delete Failed",
-
-          text:
-            "Something went wrong",
-
-          customClass: {
-
-            popup:
-              "round-popup",
-
-            title:
-              "round-title",
-
-            confirmButton:
-              "round-confirm"
-
-          }
-
-        });
+        await showError("Delete Failed", "Something went wrong");
 
       }
 

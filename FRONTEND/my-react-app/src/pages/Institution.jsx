@@ -4,7 +4,7 @@ import axios from "axios";
 import Sidebar from "../components/Sidebar";
 import Topbar from "../components/Topbar";
 
-import Swal from "sweetalert2";
+import { showSuccess, showError } from "../services/alertService";
 
 import "../styles/Institution.css";
 import LocationAutocomplete from "../components/LocationAutocomplete";
@@ -204,17 +204,7 @@ export default function Institution() {
         }
       );
 
-      await Swal.fire({
-        icon: "success",
-        title: "Profile Updated",
-        text: "Institution updated successfully",
-        timer: 1500,
-        showConfirmButton: false,
-        customClass: {
-          popup: "round-popup",
-          title: "round-title"
-        }
-      });
+      await showSuccess("Profile Updated", "Institution updated successfully", 1500);
 
       setCurrentStage(1);
       fetchInstitution();
@@ -226,16 +216,7 @@ export default function Institution() {
           ? responseData
           : JSON.stringify(responseData)
         : error.message || 'Something went wrong';
-      Swal.fire({
-        icon: "error",
-        title: "Update Failed",
-        text: errorMessage,
-        customClass: {
-          popup: "round-popup",
-          title: "round-title",
-          confirmButton: "round-confirm"
-        }
-      });
+      await showError("Update Failed", errorMessage);
     } finally {
       setLoading(false);
     }

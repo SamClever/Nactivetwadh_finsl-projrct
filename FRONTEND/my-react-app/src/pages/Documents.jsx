@@ -5,7 +5,7 @@ import axios from "axios";
 import Sidebar from "../components/Sidebar";
 import Topbar from "../components/Topbar";
 
-import Swal from "sweetalert2";
+import { showSuccess, showError, showWarning } from "../services/alertService";
 
 import "../styles/Documents.css";
 
@@ -434,37 +434,11 @@ export default function Documents() {
            SUCCESS ALERT
         ========================= */
 
-        await Swal.fire({
-
-          icon: "success",
-
-          title:
-
-            editingId
-
-              ?
-
-              "Document Updated"
-
-              :
-
-              "Document Uploaded",
-
-          timer: 1500,
-
-          showConfirmButton: false,
-
-          customClass: {
-
-            popup:
-              "round-popup",
-
-            title:
-              "round-title"
-
-          }
-
-        });
+        await showSuccess(
+          editingId ? "Document Updated" : "Document Uploaded",
+          "",
+          1500
+        );
 
 
 
@@ -484,34 +458,10 @@ export default function Documents() {
 
 
 
-        Swal.fire({
-
-          icon: "error",
-
-          title: "Failed",
-
-          text:
-
-            error.response?.data?.error
-
-            ||
-
-            "Operation failed",
-
-          customClass: {
-
-            popup:
-              "round-popup",
-
-            title:
-              "round-title",
-
-            confirmButton:
-              "round-confirm"
-
-          }
-
-        });
+        await showError(
+          "Failed",
+          error.response?.data?.error || "Operation failed"
+        );
 
       }
 
@@ -534,47 +484,12 @@ export default function Documents() {
 
 
 
-      const result =
-
-        await Swal.fire({
-
-          title:
-            "Delete document?",
-
-          text:
-            "This action cannot be undone",
-
-          icon:
-            "warning",
-
-          showCancelButton: true,
-
-          confirmButtonText:
-            "Delete",
-
-          cancelButtonText:
-            "Cancel",
-
-          confirmButtonColor:
-            "#dc2626",
-
-          customClass: {
-
-            popup:
-              "round-popup",
-
-            title:
-              "round-title",
-
-            confirmButton:
-              "round-confirm",
-
-            cancelButton:
-              "round-cancel"
-
-          }
-
-        });
+      const result = await showWarning(
+        "Delete document?",
+        "This action cannot be undone",
+        "Delete",
+        "Cancel"
+      );
 
 
 
@@ -620,27 +535,7 @@ export default function Documents() {
 
 
 
-        await Swal.fire({
-
-          icon: "success",
-
-          title: "Deleted",
-
-          timer: 1200,
-
-          showConfirmButton: false,
-
-          customClass: {
-
-            popup:
-              "round-popup",
-
-            title:
-              "round-title"
-
-          }
-
-        });
+        await showSuccess("Deleted", "", 1200);
 
 
 
@@ -658,29 +553,7 @@ export default function Documents() {
 
 
 
-        Swal.fire({
-
-          icon: "error",
-
-          title: "Delete Failed",
-
-          text:
-            "Something went wrong",
-
-          customClass: {
-
-            popup:
-              "round-popup",
-
-            title:
-              "round-title",
-
-            confirmButton:
-              "round-confirm"
-
-          }
-
-        });
+        await showError("Delete Failed", "Something went wrong");
 
       }
 

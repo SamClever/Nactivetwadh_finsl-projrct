@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Swal from "sweetalert2";
 import axios from "axios";
+import { showToast, showError } from "../services/alertService";
 import "../styles/login.css";
 
 export default function Login() {
@@ -60,63 +60,29 @@ export default function Login() {
         console.log("✓ User stored:", data.user);
         console.log("✓ Preparing redirect with debug modal...");
 
-        // Show a success modal (requires OK) and then perform a full-page redirect
         try {
-          Swal.fire({
-            icon: 'success',
-            title: 'Login successful',
-            text: 'Redirecting to your dashboard...',
-            toast: true,
-            position: 'top-end',
-            timer: 1200,
-            timerProgressBar: true,
-            showConfirmButton: false,
-            customClass: { popup: 'small-round-alert' },
-          }).then(() => {
-            // Force a full navigation so ProtectedRoute sees stored values reliably
-            try {
-              window.location.href = '/dashboard';
-            } catch (e) {
-              console.error('Forced redirect failed, attempting router navigate:', e);
-              try { navigate('/dashboard', { replace: true }); } catch (_) {}
-            }
-          });
+          await showToast('Login successful', 'success', 1200);
         } catch (e) {
-          console.error('Swal show failed:', e);
-          // Fallback immediate navigation
-          try { window.location.href = '/dashboard'; } catch (_) { navigate('/dashboard', { replace: true }); }
+          console.error('Toast show failed:', e);
+        }
+
+        try {
+          window.location.href = '/dashboard';
+        } catch (e) {
+          console.error('Forced redirect failed, attempting router navigate:', e);
+          try { navigate('/dashboard', { replace: true }); } catch (_) {}
         }
 
         return;
       } else {
         console.error("Login failed:", data);
         setLoading(false);
-        Swal.fire({
-          icon: "error",
-          title: "Login Failed",
-          text: data.error || "Invalid credentials",
-          width: "420px",
-          showConfirmButton: true,
-          confirmButtonText: 'OK',
-          customClass: {
-            popup: "small-round-alert",
-          },
-        });
+        await showError("Login Failed", data.error || "Invalid credentials");
       }
     } catch (error) {
       setLoading(false);
       console.error("LOGIN ERROR:", error);
-      Swal.fire({
-        icon: "error",
-        title: "Server Error",
-        text: "Something went wrong",
-        width: "420px",
-        showConfirmButton: true,
-        confirmButtonText: 'OK',
-        customClass: {
-          popup: "small-round-alert",
-        },
-      });
+      await showError("Server Error", "Something went wrong");
     }
   };
 
