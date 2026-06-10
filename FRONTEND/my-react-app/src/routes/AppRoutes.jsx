@@ -11,6 +11,7 @@ import Applications from "../pages/Applications";
 import Documents from "../pages/Documents";
 import Institution from "../pages/Institution";
 import Payments from "../pages/Payments";
+import Certificates from "../pages/Certificates";
 
 import ProtectedRoute
 from "../components/ProtectedRoute";
@@ -125,6 +126,24 @@ export default function AppRoutes() {
             <ProtectedRoute>
 
               <Payments />
+
+            </ProtectedRoute>
+
+          }
+
+        />
+
+        {/* CERTIFICATES */}
+
+        <Route
+
+          path="/certificates"
+
+          element={
+
+            <ProtectedRoute>
+
+              <Certificates />
 
             </ProtectedRoute>
 
