@@ -16,7 +16,20 @@ register,
 login,
 manage_users,
 manage_institutions,
-api_root
+api_root,
+management_profile,
+management_summary,
+management_applications,
+management_institutions,
+management_payments,
+management_reviews,
+management_inspections,
+management_inspection_forms,
+management_form_questions,
+management_inspection_teams,
+management_inspection_responses,
+management_certificates,
+management_users,
 
 )
 
@@ -108,5 +121,69 @@ path(
     manage_payments
 ),
 
+path(
+    'management/profile/',
+    management_profile
+),
+
+path(
+    'management/summary/',
+    management_summary
+),
+
+path(
+    'management/applications/',
+    management_applications
+),
+
+path(
+    'management/institutions/',
+    management_institutions
+),
+
+path(
+    'management/payments/',
+    management_payments
+),
+
+path(
+    'management/reviews/',
+    management_reviews
+),
+
+path(
+    'management/inspections/',
+    management_inspections
+),
+
+path(
+    'management/inspection-forms/',
+    management_inspection_forms
+),
+
+path(
+    'management/form-questions/',
+    management_form_questions
+),
+
+path(
+    'management/inspection-teams/',
+    management_inspection_teams
+),
+
+path(
+    'management/inspection-responses/',
+    management_inspection_responses
+),
+
+path(
+    'management/certificates/',
+    management_certificates
+),
+
+path(
+    'management/users/',
+    management_users
+),
 
 ]

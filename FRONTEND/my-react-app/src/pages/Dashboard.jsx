@@ -78,11 +78,25 @@ export default function Dashboard() {
 
   const latestApplication = applications.length > 0 ? applications[0] : null;
 
+  const submittedStatuses = ['submitted', 'under_review', 'inspection', 'approved', 'conditional', 'rejected'];
+  const isRegistrationSubmitted = submittedStatuses.includes(latestApplication?.status);
+  const isPaymentCompleted = latestApplication?.payment_status === 'paid';
+  const isInspectionCompleted = latestApplication?.inspection_status === 'completed';
+  const isCertificateApproved = latestApplication?.status === 'approved';
+
+  const displayStatus = latestApplication
+    ? isCertificateApproved
+      ? 'Approved'
+      : isInspectionCompleted
+        ? 'Inspection completed'
+        : latestApplication.status?.replace('_', ' ')
+    : 'Not Started';
+
   const steps = [
-    latestApplication?.status === 'submitted',
-    latestApplication?.payment_status === 'paid',
-    latestApplication?.inspection_status === 'completed',
-    latestApplication?.status === 'approved'
+    isRegistrationSubmitted,
+    isPaymentCompleted,
+    isInspectionCompleted,
+    isCertificateApproved
   ];
 
   const completed = steps.filter(Boolean).length;
@@ -130,7 +144,7 @@ export default function Dashboard() {
               <div className="card-content">
                 <span>APPLICATIONS</span>
                 <h3>{loading ? '...' : applications.length}</h3>
-                <p>{latestApplication?.status || 'No application'}</p>
+                <p>{displayStatus === 'Not Started' ? 'No application' : displayStatus}</p>
               </div>
             </div>
 
@@ -184,30 +198,30 @@ export default function Dashboard() {
               </div>
               <div className="info-box">
                 <span>Current Status</span>
-                <h4>{latestApplication?.status || 'Not Started'}</h4>
+                <h4>{displayStatus}</h4>
               </div>
             </div>
 
             <div className="institution-section">
               <h3>Application Progress</h3>
 
-              <div className={latestApplication?.status === 'submitted' ? 'progress-item complete' : 'progress-item pending'}>
-                {latestApplication?.status === 'submitted' ? <CheckCircle size={18} /> : <Circle size={18} />}
+              <div className={isRegistrationSubmitted ? 'progress-item complete' : 'progress-item pending'}>
+                {isRegistrationSubmitted ? <CheckCircle size={18} /> : <Circle size={18} />}
                 Registration Submitted
               </div>
 
-              <div className={latestApplication?.payment_status === 'paid' ? 'progress-item complete' : 'progress-item pending'}>
-                {latestApplication?.payment_status === 'paid' ? <CheckCircle size={18} /> : <Circle size={18} />}
+              <div className={isPaymentCompleted ? 'progress-item complete' : 'progress-item pending'}>
+                {isPaymentCompleted ? <CheckCircle size={18} /> : <Circle size={18} />}
                 Payment Completed
               </div>
 
-              <div className={latestApplication?.inspection_status === 'completed' ? 'progress-item complete' : 'progress-item pending'}>
-                {latestApplication?.inspection_status === 'completed' ? <CheckCircle size={18} /> : <Circle size={18} />}
+              <div className={isInspectionCompleted ? 'progress-item complete' : 'progress-item pending'}>
+                {isInspectionCompleted ? <CheckCircle size={18} /> : <Circle size={18} />}
                 Inspection Completed
               </div>
 
-              <div className={latestApplication?.status === 'approved' ? 'progress-item complete' : 'progress-item pending'}>
-                {latestApplication?.status === 'approved' ? <CheckCircle size={18} /> : <Circle size={18} />}
+              <div className={isCertificateApproved ? 'progress-item complete' : 'progress-item pending'}>
+                {isCertificateApproved ? <CheckCircle size={18} /> : <Circle size={18} />}
                 Certificate Approved
               </div>
 
