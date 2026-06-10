@@ -235,9 +235,9 @@ export default function Institution() {
     .join(', ');
 
   return (
-    <div className="dashboard-layout">
+    <div className="flex min-h-screen bg-gradient-to-br from-indigo-50 to-slate-50 text-slate-900">
       <Sidebar />
-      <div className="dashboard-main">
+      <div className="flex min-w-0 flex-1 flex-col">
         <Topbar />
         <div className="institution-container">
           {/* <div className="institution-header">

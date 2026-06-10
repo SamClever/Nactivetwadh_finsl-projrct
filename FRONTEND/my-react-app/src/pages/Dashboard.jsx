@@ -1,13 +1,51 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { FileText, Upload, CreditCard, CheckCircle, Circle } from 'lucide-react';
 
 import Sidebar from '../components/Sidebar';
 import Topbar from '../components/Topbar';
 
-import { FileText, Upload, CreditCard, CheckCircle, Circle } from 'lucide-react';
+function StatusStep({ complete, children }) {
+  return (
+    <div
+      className={[
+        'mb-3 flex items-center gap-4 rounded-xl border px-5 py-4 text-sm font-medium transition hover:translate-x-1',
+        complete
+          ? 'border-emerald-600/20 bg-gradient-to-br from-emerald-50 to-emerald-100 text-emerald-800'
+          : 'border-amber-700/20 bg-gradient-to-br from-amber-100 to-yellow-200 text-amber-800',
+      ].join(' ')}
+    >
+      {complete ? <CheckCircle size={18} /> : <Circle size={18} />}
+      {children}
+    </div>
+  );
+}
 
-import '../styles/dashboard.css';
+function SummaryCard({ icon: Icon, tone, label, value, detail, onClick }) {
+  const iconClass = {
+    green: 'bg-gradient-to-br from-emerald-500 to-emerald-600',
+    orange: 'bg-gradient-to-br from-amber-500 to-orange-600',
+    blue: 'bg-gradient-to-br from-sky-700 to-sky-500',
+  }[tone];
+
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="grid min-h-30 grid-cols-[72px_1fr] items-center gap-4 rounded-[14px] border border-slate-900/10 bg-white p-5 text-left shadow-[0_6px_16px_rgba(30,41,59,0.05)] transition hover:-translate-y-1.5 hover:shadow-[0_16px_36px_rgba(30,41,59,0.12)] focus:outline-none focus:ring-4 focus:ring-sky-700/10"
+    >
+      <span className={`grid h-14 w-14 place-items-center rounded-xl text-white ${iconClass}`}>
+        <Icon size={25} />
+      </span>
+      <span className="flex flex-col">
+        <span className="text-xs font-bold uppercase tracking-[0.08em] text-slate-400">{label}</span>
+        <span className="mt-1 text-2xl font-extrabold text-slate-950">{value}</span>
+        <span className="mt-1 text-sm font-semibold text-slate-500">{detail}</span>
+      </span>
+    </button>
+  );
+}
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -16,43 +54,32 @@ export default function Dashboard() {
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const user = React.useMemo(() => {
-    try {
-      return JSON.parse(localStorage.getItem('user')) || null;
-    } catch (e) {
-      return null;
-    }
-  }, []);
-
   useEffect(() => {
-      const token = (localStorage.getItem('token') || "").trim().replace(/^\"|\"$/g, "");
-      if (token) {
-        // ensure axios default header is set
-        try { axios.defaults.headers.common['Authorization'] = `Bearer ${token}`; } catch (e) {}
-        fetchApplications();
-        fetchDocuments();
+    const token = (localStorage.getItem('token') || '').trim().replace(/^"|"$/g, '');
+    if (token) {
+      try {
+        axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+      } catch (e) {
+        // Ignore storage/header issues during first render.
       }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+      fetchApplications();
+      fetchDocuments();
+    }
   }, []);
 
   const fetchApplications = async () => {
     try {
-      const token = (localStorage.getItem('token') || "").trim().replace(/^\"|\"$/g, "");
-        console.debug('fetchApplications using token:', token ? token.substring(0,20)+'...' : token);
-      
+      const token = (localStorage.getItem('token') || '').trim().replace(/^"|"$/g, '');
       const res = await axios.get('http://127.0.0.1:8000/api/applications/', {
         headers: {
-          Authorization: 'Bearer ' + token,
-          'Content-Type': 'application/json'
-        }
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
       });
 
       setApplications(res.data || []);
     } catch (err) {
-        console.error('Applications error', err?.response || err);
-        try {
-          console.debug('Applications error response data/status:', err?.response?.data, err?.response?.status);
-        } catch (e) {}
+      console.error('Applications error', err?.response || err);
     } finally {
       setLoading(false);
     }
@@ -60,19 +87,17 @@ export default function Dashboard() {
 
   const fetchDocuments = async () => {
     try {
-      const token = (localStorage.getItem('token') || "").trim().replace(/^\"|\"$/g, "");
-      console.debug('fetchDocuments using token:', token ? token.substring(0,20)+'...' : token);
+      const token = (localStorage.getItem('token') || '').trim().replace(/^"|"$/g, '');
       const res = await axios.get('http://127.0.0.1:8000/api/documents/', {
         headers: {
-          Authorization: 'Bearer ' + token,
-          'Content-Type': 'application/json'
-        }
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
       });
 
       setDocuments(res.data || []);
     } catch (err) {
       console.error('Documents error', err?.response || err);
-      try { console.debug('Documents error response data/status:', err?.response?.data, err?.response?.status); } catch (e) {}
     }
   };
 
@@ -96,145 +121,84 @@ export default function Dashboard() {
     isRegistrationSubmitted,
     isPaymentCompleted,
     isInspectionCompleted,
-    isCertificateApproved
+    isCertificateApproved,
   ];
-
   const completed = steps.filter(Boolean).length;
   const progress = Math.round((completed / 4) * 100);
 
-  const handleLogout = () => {
-    localStorage.clear();
-    navigate('/');
-  };
-
   return (
-    <div className="dashboard-layout">
+    <div className="flex min-h-screen bg-gradient-to-br from-indigo-50 to-slate-50 text-slate-900">
       <Sidebar />
-      <div className="dashboard-main">
+      <div className="flex min-w-0 flex-1 flex-col">
         <Topbar />
 
-        <div className="dashboard-content">
-          {/* <div className="welcome-widget" role="region" aria-label="Welcome">
-            <div className="user-avatar">{(user?.institution || user?.username || 'N')[0]}</div>
-            <div className="welcome-info">
-              <span>Institution Registration & Accreditation</span>
-              <h3>{user?.institution || user?.username || 'Institution'}</h3>
-              <p>Welcome back — here's a quick summary of your application and documents.</p>
-            </div>
-            <div className="user-status">
-              <div className="status-badge">{latestApplication ? latestApplication.status : 'No Application'}</div>
-              <small>Account: {user?.email || 'N/A'}</small>
-            </div>
-          </div> */}
-
-          <div className="cards-grid">
-            <div
-              className="workspace-card"
-              role="button"
-              tabIndex={0}
+        <main className="mx-auto w-full max-w-[1400px] flex-1 px-4 py-7 sm:px-6 lg:px-10">
+          <section className="grid gap-5 lg:grid-cols-3">
+            <SummaryCard
+              icon={FileText}
+              tone="green"
+              label="Applications"
+              value={loading ? '...' : applications.length}
+              detail={displayStatus === 'Not Started' ? 'No application' : displayStatus}
               onClick={() => navigate('/applications')}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') navigate('/applications');
-              }}
-              aria-label="View applications"
-            >
-              <div className="card-icon green">
-                <FileText size={25} />
-              </div>
-              <div className="card-content">
-                <span>APPLICATIONS</span>
-                <h3>{loading ? '...' : applications.length}</h3>
-                <p>{displayStatus === 'Not Started' ? 'No application' : displayStatus}</p>
-              </div>
-            </div>
-
-            <div
-              className="workspace-card"
-              role="button"
-              tabIndex={0}
+            />
+            <SummaryCard
+              icon={Upload}
+              tone="orange"
+              label="Documents"
+              value={loading ? '...' : documents.length}
+              detail={documents.length > 0 ? `${documents.length} Uploaded` : 'Upload pending'}
               onClick={() => navigate('/documents')}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') navigate('/documents');
-              }}
-              aria-label="View documents"
-            >
-              <div className="card-icon orange">
-                <Upload size={25} />
-              </div>
-              <div className="card-content">
-                <span>DOCUMENTS</span>
-                <h3>{loading ? '...' : documents.length}</h3>
-                <p>{documents.length > 0 ? documents.length + ' Uploaded' : 'Upload pending'}</p>
-              </div>
-            </div>
-
-            <div
-              className="workspace-card"
-              role="button"
-              tabIndex={0}
+            />
+            <SummaryCard
+              icon={CreditCard}
+              tone="blue"
+              label="Payment"
+              value={latestApplication?.payment_status || 'Pending'}
+              detail={isPaymentCompleted ? 'Payment completed' : 'Awaiting verification'}
               onClick={() => navigate('/payments')}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') navigate('/payments');
-              }}
-              aria-label="View payments"
-            >
-              <div className="card-icon blue">
-                <CreditCard size={25} />
-              </div>
-              <div className="card-content">
-                <span>PAYMENT</span>
-                <h3>{latestApplication?.payment_status || 'Pending'}</h3>
-                <p>{latestApplication?.payment_status === 'paid' ? 'Payment completed' : 'Awaiting verification'}</p>
-              </div>
-            </div>
-          </div>
+            />
+          </section>
 
-          <div className="info-grid">
-            <div className="institution-section">
-              <h2>Recent Activity</h2>
-              <div className="info-box">
-                <span>Latest Application</span>
-                <h4>{latestApplication?.application_type || 'No application'}</h4>
+          <section className="mt-7 grid gap-5 xl:grid-cols-2">
+            <div className="rounded-[14px] border border-slate-900/10 bg-white p-6 shadow-[0_4px_12px_rgba(30,41,59,0.05)]">
+              <h2 className="mb-4 text-lg font-bold text-slate-950">Recent Activity</h2>
+              <div className="mb-3 rounded-[10px] border border-slate-900/5 bg-gradient-to-br from-slate-50 to-slate-100 p-4">
+                <span className="text-xs font-medium uppercase tracking-[0.05em] text-slate-500">
+                  Latest Application
+                </span>
+                <h4 className="mt-2 text-base font-bold text-slate-950">
+                  {latestApplication?.application_type || 'No application'}
+                </h4>
               </div>
-              <div className="info-box">
-                <span>Current Status</span>
-                <h4>{displayStatus}</h4>
+              <div className="rounded-[10px] border border-slate-900/5 bg-gradient-to-br from-slate-50 to-slate-100 p-4">
+                <span className="text-xs font-medium uppercase tracking-[0.05em] text-slate-500">
+                  Current Status
+                </span>
+                <h4 className="mt-2 text-base font-bold text-slate-950">{displayStatus}</h4>
               </div>
             </div>
 
-            <div className="institution-section">
-              <h3>Application Progress</h3>
+            <div className="rounded-[14px] border border-slate-900/10 bg-white p-6 shadow-[0_4px_12px_rgba(30,41,59,0.05)]">
+              <h3 className="mb-4 text-lg font-semibold text-slate-950">Application Progress</h3>
+              <StatusStep complete={isRegistrationSubmitted}>Registration Submitted</StatusStep>
+              <StatusStep complete={isPaymentCompleted}>Payment Completed</StatusStep>
+              <StatusStep complete={isInspectionCompleted}>Inspection Completed</StatusStep>
+              <StatusStep complete={isCertificateApproved}>Certificate Approved</StatusStep>
 
-              <div className={isRegistrationSubmitted ? 'progress-item complete' : 'progress-item pending'}>
-                {isRegistrationSubmitted ? <CheckCircle size={18} /> : <Circle size={18} />}
-                Registration Submitted
-              </div>
-
-              <div className={isPaymentCompleted ? 'progress-item complete' : 'progress-item pending'}>
-                {isPaymentCompleted ? <CheckCircle size={18} /> : <Circle size={18} />}
-                Payment Completed
-              </div>
-
-              <div className={isInspectionCompleted ? 'progress-item complete' : 'progress-item pending'}>
-                {isInspectionCompleted ? <CheckCircle size={18} /> : <Circle size={18} />}
-                Inspection Completed
-              </div>
-
-              <div className={isCertificateApproved ? 'progress-item complete' : 'progress-item pending'}>
-                {isCertificateApproved ? <CheckCircle size={18} /> : <Circle size={18} />}
-                Certificate Approved
-              </div>
-
-              <div className="mini-progress">
-                <div className="progress-title">Application Completion</div>
-                <div className="progress-bar">
-                  <div className="progress-fill" style={{ width: progress + '%' }} />
+              <div className="mt-6 border-t border-slate-900/10 pt-6">
+                <div className="mb-4 text-sm font-bold text-slate-950">Application Completion</div>
+                <div className="mb-3 h-2.5 overflow-hidden rounded-full bg-slate-200 shadow-inner">
+                  <div
+                    className="h-full rounded-full bg-gradient-to-r from-sky-700 to-cyan-500 transition-all duration-500"
+                    style={{ width: `${progress}%` }}
+                  />
                 </div>
-                <small>{progress}% Completed</small>
+                <small className="text-xs font-medium text-slate-500">{progress}% Completed</small>
               </div>
             </div>
-          </div>
-        </div>
+          </section>
+        </main>
       </div>
     </div>
   );
