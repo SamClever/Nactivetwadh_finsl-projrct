@@ -256,6 +256,11 @@ class Institution(models.Model):
         blank=True
     )
 
+    registration_data = models.TextField(
+        null=True,
+        blank=True
+    )
+
     # Metadata
     created_at = models.DateTimeField(
         auto_now_add=True

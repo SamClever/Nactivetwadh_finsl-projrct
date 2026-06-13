@@ -143,8 +143,7 @@ form .btn-submit {
   box-sizing: border-box;
 }
 
-h1,
-h2 {
+:where(h1, h2) {
   font-family: var(--heading);
   font-weight: 500;
   color: var(--text-h);
@@ -185,4 +184,13 @@ code {
   line-height: 135%;
   padding: 4px 8px;
   background: var(--code-bg);
+}
+
+/* Sidebar header text visibility overrides */
+aside h2 {
+  color: #0f172a !important; /* Force Slate-900 color */
+}
+
+aside p {
+  color: #475569 !important; /* Force Slate-600 color */
 }

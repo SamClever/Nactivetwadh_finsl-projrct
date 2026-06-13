@@ -376,3 +376,19 @@
     gap: 12px;
   }
 }
+
+/* ==========================================================================
+   WIZARD PAGE HEADER VISIBILITY OVERRIDES
+   ========================================================================== */
+.wizard-page-header {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+}
+
+.wizard-page-header h1 {
+  color: #0f172a !important; /* Force dark Slate-900 text color */
+}
+
+.wizard-page-header p {
+  color: #475569 !important; /* Force dark Slate-600 text color */
+}

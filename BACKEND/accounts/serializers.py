@@ -106,6 +106,7 @@ class InstitutionSerializer(serializers.ModelSerializer):
             'accreditation_status',
             'previous_accreditation',
             'years_operation',
+            'registration_data',
             'username',
             'email',
             'phone',
