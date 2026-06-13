@@ -76,20 +76,24 @@ export default function Dashboard() {
             </div>
 
             <div className="mt-8 space-y-5">
-              {summary && Object.entries(summary.status_counts).map(([status, value]) => (
-                <div key={status} className="space-y-2">
-                  <div className="flex items-center justify-between text-sm text-slate-600">
-                    <span>{status.replace('_', ' ').toUpperCase()}</span>
-                    <span>{value}</span>
+              {summary && Object.entries(summary.status_counts).map(([status, value]) => {
+                const totalApps = summary?.totals?.applications || 1;
+                const percentage = Math.round((value / totalApps) * 100);
+                return (
+                  <div key={status} className="space-y-2">
+                    <div className="flex items-center justify-between text-sm text-slate-600">
+                      <span>{status.replace('_', ' ').toUpperCase()}</span>
+                      <span>{value} ({percentage}%)</span>
+                    </div>
+                    <div className="h-2 overflow-hidden rounded-full bg-slate-200">
+                      <div
+                        className={`h-full rounded-full bg-brand-700 ${statusClasses[status] ?? 'bg-slate-500'}`}
+                        style={{ width: `${percentage}%` }}
+                      />
+                    </div>
                   </div>
-                  <div className="h-2 overflow-hidden rounded-full bg-slate-200">
-                    <div
-                      className={`h-full rounded-full bg-brand-700 ${statusClasses[status] ?? 'bg-slate-500'}`}
-                      style={{ width: `${Math.min(value * 8, 100)}%` }}
-                    />
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </section>
         </section>
@@ -138,7 +142,7 @@ export default function Dashboard() {
               <Activity size={24} className="text-accent-600" />
             </div>
 
-            <div className="mt-8 grid gap-4 sm:grid-cols-2">
+            <div className="mt-8 grid gap-4 sm:grid-cols-3">
               <div className="rounded-3xl border border-brand-100 bg-white p-5 shadow-sm">
                 <p className="text-sm text-slate-600">Certificates issued</p>
                 <p className="mt-4 text-3xl font-semibold text-slate-950">{summary?.totals?.certificates ?? '--'}</p>
@@ -146,6 +150,10 @@ export default function Dashboard() {
               <div className="rounded-3xl border border-brand-100 bg-white p-5 shadow-sm">
                 <p className="text-sm text-slate-600">Inspections scheduled</p>
                 <p className="mt-4 text-3xl font-semibold text-slate-950">{summary?.inspection_counts?.scheduled ?? '--'}</p>
+              </div>
+              <div className="rounded-3xl border border-brand-100 bg-white p-5 shadow-sm">
+                <p className="text-sm text-slate-600">Inspections completed</p>
+                <p className="mt-4 text-3xl font-semibold text-slate-950">{summary?.inspection_counts?.completed ?? '--'}</p>
               </div>
             </div>
 

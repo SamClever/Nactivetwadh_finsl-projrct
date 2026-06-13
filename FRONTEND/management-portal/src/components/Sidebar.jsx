@@ -10,6 +10,7 @@ import {
   BarChart3,
   Users,
   ClipboardList,
+  ClipboardCheck,
 } from 'lucide-react';
 
 const navigation = [
@@ -44,8 +45,14 @@ const navigation = [
     roles: ['admin', 'inspector', 'zonal_manager'],
   },
   {
+    to: '/inspection-form-entry',
+    label: 'Conduct Inspection',
+    icon: ClipboardCheck,
+    roles: ['admin', 'inspector', 'zonal_manager'],
+  },
+  {
     to: '/inspection-forms',
-    label: 'Inspection Forms',
+    label: 'Inspection Templates',
     icon: ClipboardList,
     roles: ['admin', 'inspector', 'zonal_manager'],
   },
@@ -96,7 +103,7 @@ export default function Sidebar() {
   const role = user?.role || 'institution';
 
   return (
-    <aside className="hidden lg:flex h-full w-72 flex-col border-r border-slate-800 bg-slate-950 px-6 py-8 text-slate-100 shadow-xl">
+    <aside className="hidden lg:flex sticky top-0 h-screen w-72 flex-col border-r border-slate-800 bg-slate-950 px-6 py-8 text-slate-100 shadow-xl overflow-y-auto shrink-0">
       <div className="mb-10 flex items-center gap-4">
         <div className="flex h-14 w-14 items-center justify-center rounded-3xl bg-gradient-to-br from-accent-600 to-brand-500 text-white shadow-[0_18px_40px_rgba(37,99,235,0.25)]">
           N

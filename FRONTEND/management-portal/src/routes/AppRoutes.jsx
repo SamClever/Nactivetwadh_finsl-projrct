@@ -5,6 +5,7 @@ import Applications from '../pages/Applications';
 import Institutions from '../pages/Institutions';
 import Payments from '../pages/Payments';
 import Inspections from '../pages/Inspections';
+import HardcopyInspectionForm from '../pages/HardcopyInspectionForm';
 import InspectionForms from '../pages/InspectionForms';
 import InspectionTeams from '../pages/InspectionTeams';
 import Reviews from '../pages/Reviews';
@@ -56,6 +57,14 @@ export default function AppRoutes() {
           element={
             <ProtectedRoute>
               <Inspections />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/inspection-form-entry"
+          element={
+            <ProtectedRoute>
+              <HardcopyInspectionForm />
             </ProtectedRoute>
           }
         />

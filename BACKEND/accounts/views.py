@@ -1797,7 +1797,7 @@ def management_inspections(request):
             "remarks": inspection.overall_remarks,
         })
 
-    queryset = Inspection.objects.select_related('application').order_by('-scheduled_date')
+    queryset = Inspection.objects.select_related('application__institution__user').order_by('-scheduled_date')
     search = request.GET.get('search')
     if search:
         queryset = queryset.filter(
@@ -1814,6 +1814,16 @@ def management_inspections(request):
             "status": inspection.inspection_status,
             "result": inspection.inspection_result,
             "remarks": inspection.overall_remarks,
+            "institution": {
+                "name": inspection.application.institution.institution_name,
+                "location": inspection.application.institution.location or inspection.application.institution.city or inspection.application.institution.region or "",
+                "district": inspection.application.institution.district or "",
+                "plot": inspection.application.institution.ward or inspection.application.institution.street or "",
+                "address": inspection.application.institution.street_address or "",
+                "phone": inspection.application.institution.principal_phone or inspection.application.institution.user.phone or "",
+                "email": inspection.application.institution.principal_email or inspection.application.institution.user.email or "",
+                "webpage": "",
+            } if inspection.application and inspection.application.institution else None
         }
         for inspection in queryset
     ]
@@ -1821,12 +1831,23 @@ def management_inspections(request):
     return Response(data)
 
 
-@api_view(['GET', 'POST'])
+@api_view(['GET', 'POST', 'DELETE'])
 def management_inspection_forms(request):
     try:
         require_management_role(request, allowed_roles=['admin', 'inspector', 'zonal_manager'])
     except Exception as exc:
         return _error_response(exc)
+
+    if request.method == 'DELETE':
+        form_id = request.GET.get('id') or request.data.get('id')
+        if not form_id:
+            return Response({"error": "Form id is required."}, status=400)
+        try:
+            form = InspectionForm.objects.get(id=form_id)
+            form.delete()
+            return Response({"message": "Inspection form template deleted successfully."})
+        except InspectionForm.DoesNotExist:
+            return Response({"error": "Inspection form not found."}, status=404)
 
     if request.method == 'POST':
         form_name = request.data.get('form_name')
@@ -1863,12 +1884,23 @@ def management_inspection_forms(request):
     ])
 
 
-@api_view(['GET', 'POST'])
+@api_view(['GET', 'POST', 'DELETE'])
 def management_form_questions(request):
     try:
         require_management_role(request, allowed_roles=['admin', 'inspector', 'zonal_manager'])
     except Exception as exc:
         return _error_response(exc)
+
+    if request.method == 'DELETE':
+        question_id = request.GET.get('id') or request.data.get('id')
+        if not question_id:
+            return Response({"error": "Question id is required."}, status=400)
+        try:
+            question = FormQuestion.objects.get(id=question_id)
+            question.delete()
+            return Response({"message": "Question deleted successfully."})
+        except FormQuestion.DoesNotExist:
+            return Response({"error": "Question not found."}, status=404)
 
     if request.method == 'POST':
         form_id = request.data.get('form')
@@ -1964,18 +1996,125 @@ def management_inspection_teams(request):
     ])
 
 
-@api_view(['GET'])
+@api_view(['GET', 'POST'])
 def management_inspection_responses(request):
     try:
         require_management_role(request, allowed_roles=['admin', 'inspector', 'zonal_manager'])
     except Exception as exc:
         return _error_response(exc)
 
+    if request.method == 'POST':
+        inspection_id = request.data.get('inspection')
+        responses_data = request.data.get('responses', [])
+        form_name = request.data.get('form_name') or 'NACTVET Technical Training Institution Inspection Form'
+        version = request.data.get('version') or 'Revised April 2012'
+        total_score = request.data.get('total_score')
+        average_score = request.data.get('average_score')
+
+        if not inspection_id:
+            return Response({"inspection": "This field is required."}, status=400)
+
+        if not isinstance(responses_data, list) or not responses_data:
+            return Response({"responses": "At least one scored response is required."}, status=400)
+
+        try:
+            inspection = Inspection.objects.select_related('application').get(id=inspection_id)
+        except Inspection.DoesNotExist:
+            return Response({"error": "Inspection not found."}, status=404)
+
+        form, _ = InspectionForm.objects.get_or_create(
+            form_name=form_name,
+            version=version,
+        )
+
+        saved = []
+        for item in responses_data:
+            question_text = item.get('question_text')
+            actual_answer = item.get('actual_answer')
+            score = item.get('score')
+            comments = item.get('comments', '')
+            expected_answer = item.get('expected_answer') or 'Select the matching score from the inspection rubric.'
+
+            if not question_text or actual_answer in [None, ''] or score in [None, '']:
+                return Response(
+                    {"error": "Each response requires question_text, actual_answer, and score."},
+                    status=400,
+                )
+
+            try:
+                score = int(score)
+            except (TypeError, ValueError):
+                return Response({"score": "Score must be a whole number."}, status=400)
+
+            question, _ = FormQuestion.objects.get_or_create(
+                form=form,
+                question_text=question_text,
+                defaults={"expected_answer": expected_answer},
+            )
+
+            response = InspectionResponse.objects.filter(
+                inspection=inspection,
+                question=question,
+            ).first()
+
+            if response:
+                response.actual_answer = actual_answer
+                response.comments = comments
+                response.score = score
+                response.save(update_fields=['actual_answer', 'comments', 'score'])
+            else:
+                response = InspectionResponse.objects.create(
+                    inspection=inspection,
+                    question=question,
+                    actual_answer=actual_answer,
+                    comments=comments,
+                    score=score,
+                )
+
+            saved.append(response.id)
+
+        inspection.inspection_status = 'completed'
+        inspection.application.inspection_status = 'completed'
+        if not inspection.completed_at:
+            inspection.completed_at = timezone.now()
+
+        if average_score not in [None, '']:
+            try:
+                average = float(average_score)
+                if average >= 3.5:
+                    inspection.inspection_result = 'pass'
+                elif average >= 2:
+                    inspection.inspection_result = 'conditional'
+                else:
+                    inspection.inspection_result = 'fail'
+            except (TypeError, ValueError):
+                pass
+
+        inspection.overall_remarks = request.data.get('overall_remarks') or (
+            f"Total score: {total_score}; Average score: {average_score}"
+        )
+        inspection.save()
+        inspection.application.save(update_fields=['inspection_status'])
+
+        return Response({
+            "inspection": inspection.id,
+            "saved_responses": len(saved),
+            "total_score": total_score,
+            "average_score": average_score,
+            "status": inspection.inspection_status,
+            "result": inspection.inspection_result,
+        }, status=201)
+
     responses = InspectionResponse.objects.select_related(
         'inspection__application',
         'question__form',
     ).order_by('-id')
     search = request.GET.get('search')
+    inspection_id = request.GET.get('inspection')
+
+    if inspection_id:
+        responses = responses.filter(inspection_id=inspection_id)
+
     if search:
         responses = responses.filter(inspection__application__reference_number__icontains=search)
 
