@@ -208,6 +208,7 @@ const createInitialRubric = () =>
 export default function HardcopyInspectionForm() {
   const [inspections, setInspections] = useState([]);
   const [selectedInspection, setSelectedInspection] = useState("");
+  const [loadingInspections, setLoadingInspections] = useState(true);
   const [institutionDetails, setInstitutionDetails] = useState({
     name: "",
     location: "",
@@ -235,12 +236,15 @@ export default function HardcopyInspectionForm() {
   }, []);
 
   const fetchInspections = async () => {
+    setLoadingInspections(true);
     try {
       const response = await api.get("/management/inspections/");
       setInspections(response.data || []);
     } catch (error) {
       console.error("Inspection fetch error", error);
-      setError("Unable to load scheduled inspections.");
+      setError("Unable to load scheduled inspections. Please ensure you are assigned to an inspection team.");
+    } finally {
+      setLoadingInspections(false);
     }
   };
 
@@ -264,32 +268,87 @@ export default function HardcopyInspectionForm() {
     if (selectedInspection) {
       const insp = inspections.find((i) => String(i.id) === String(selectedInspection));
       if (insp && insp.institution) {
+        // ── Populate institution particulars ──────────────────────────
         setInstitutionDetails({
-          name: insp.institution.name || "",
-          location: insp.institution.location || "",
+          name:     insp.institution.name || "",
+          location: insp.institution.location || insp.institution.city || insp.institution.region || "",
           district: insp.institution.district || "",
-          plot: insp.institution.plot || "",
-          address: insp.institution.address || "",
-          phone: insp.institution.phone || "",
-          fax: "",
-          email: insp.institution.email || "",
-          webpage: "",
+          plot:     insp.institution.plot || insp.institution.ward || insp.institution.street || "",
+          address:  insp.institution.address || insp.institution.street_address || "",
+          phone:    insp.institution.phone || insp.institution.principal_phone || "",
+          fax:      insp.institution.fax || "",
+          email:    insp.institution.email || "",
+          webpage:  insp.institution.webpage || "",
+        });
+
+        // ── Pre-fill infrastructure table from applicant's REG-01 data ─
+        const regData = insp.application_data?.registration_data || {};
+        const appBuildings = regData.infrastructure_buildings || [];
+
+        setInfrastructure((current) => {
+          const updated = { ...current };
+          const normalize = (s) => s?.toLowerCase().replace(/\s+/g, " ").trim();
+
+          // 1. Map infrastructure_buildings (7 types from REG-01 Step 5)
+          appBuildings.forEach((b) => {
+            const normType = normalize(b.type);
+            const matchedKey = Object.keys(updated).find((k) => normalize(k) === normType);
+            if (matchedKey) {
+              updated[matchedKey] = {
+                ...updated[matchedKey],
+                provided: b.count !== undefined && b.count !== "" ? String(b.count) : "",
+              };
+            }
+          });
+
+          // 2. Map Library books count from info_books_count
+          if (regData.info_books_count !== undefined && regData.info_books_count !== "") {
+            updated["Library books"] = {
+              ...updated["Library books"],
+              provided: String(regData.info_books_count),
+            };
+          }
+
+          // 3. Map equipment_desc into remarks for Equipment rows
+          if (regData.equipment_desc) {
+            const short = regData.equipment_desc.slice(0, 60);
+            updated["Equipment and Tools (Computers)"] = {
+              ...updated["Equipment and Tools (Computers)"],
+              remarks: short,
+            };
+            updated["Equipment / Tools (Other specific)"] = {
+              ...updated["Equipment / Tools (Other specific)"],
+              remarks: short,
+            };
+          }
+
+          // 4. Map journals list count hint to Library journals
+          if (regData.info_journals_list && regData.info_journals_list !== "") {
+            updated["Library journals"] = {
+              ...updated["Library journals"],
+              remarks: regData.info_journals_list.slice(0, 60),
+            };
+          }
+
+          return updated;
+        });
+      } else if (insp && !insp.institution) {
+        // Institution data not linked — leave fields editable but warn
+        setError("Institution details could not be fetched for this inspection. Please fill them in manually.");
+        setInstitutionDetails({
+          name: "", location: "", district: "", plot: "",
+          address: "", phone: "", fax: "", email: "", webpage: "",
         });
       }
     } else {
       setInstitutionDetails({
-        name: "",
-        location: "",
-        district: "",
-        plot: "",
-        address: "",
-        phone: "",
-        fax: "",
-        email: "",
-        webpage: "",
+        name: "", location: "", district: "", plot: "",
+        address: "", phone: "", fax: "", email: "", webpage: "",
       });
+      setInfrastructure(createInitialInfrastructure());
     }
   }, [selectedInspection, inspections]);
+
 
   const handleInstitutionChange = (event) => {
     const { name, value } = event.target;
@@ -396,11 +455,20 @@ export default function HardcopyInspectionForm() {
       setSelectedInspection("");
     } catch (error) {
       console.error("Inspection save error", error);
-      setError(error.response?.data?.error || "The inspection could not be saved.");
+      const data = error.response?.data;
+      const msg =
+        data?.error ||
+        data?.detail ||
+        data?.responses ||
+        data?.inspection ||
+        (typeof data === "string" ? data.slice(0, 200) : null) ||
+        `Save failed (HTTP ${error.response?.status ?? "network error"})`;
+      setError(msg);
     } finally {
       setSaving(false);
     }
   };
+
 
   const nextStep = () => {
     setError("");
@@ -512,7 +580,7 @@ export default function HardcopyInspectionForm() {
                     <div className="inspection-field">
                       <label>Inspection record</label>
                       <select value={selectedInspection} onChange={(event) => setSelectedInspection(event.target.value)}>
-                        <option value="">Select scheduled inspection</option>
+                        <option value="">{loadingInspections ? 'Loading inspections...' : inspections.length === 0 ? 'No inspections assigned to you' : 'Select scheduled inspection'}</option>
                         {inspections.map((inspection) => (
                           <option key={inspection.id} value={inspection.id}>
                             {inspection.application_reference} - {inspection.scheduled_date} - {inspection.status}
@@ -530,6 +598,54 @@ export default function HardcopyInspectionForm() {
                       />
                     </div>
                   </div>
+
+                   {/* Pre-filled info banner */}
+                  {selectedInspection && (() => {
+                    const insp = inspections.find((i) => String(i.id) === String(selectedInspection));
+                    return insp?.institution ? (
+                      <div className="mb-4 flex items-start gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+                        <span className="mt-0.5 text-lg">✅</span>
+                        <div>
+                          <p className="font-semibold">Institution details pre-filled from applicant's submission</p>
+                          <p className="mt-0.5 text-emerald-700">Fields below are auto-populated from the REG-01 form. You may edit them if the on-site details differ from what was declared.</p>
+                        </div>
+                      </div>
+                    ) : null;
+                  })()}
+
+                  {/* Application summary card */}
+                  {selectedInspection && (() => {
+                    const insp = inspections.find((i) => String(i.id) === String(selectedInspection));
+                    const appData = insp?.application_data;
+                    const reg = appData?.registration_data || {};
+                    if (!appData) return null;
+                    return (
+                      <section className="inspection-section paper-section mb-4">
+                        <h2 className="paper-section-title">Application Details</h2>
+                        <div className="paper-details-grid">
+                          {[
+                            ["Reference Number", appData.reference_number],
+                            ["Application Type", appData.application_type],
+                            ["Category", appData.category],
+                            ["Programs Requested", appData.programs_requested || reg.programs_offered || "—"],
+                            ["Expected Students", appData.expected_students ?? "—"],
+                            ["Preferred Inspection Date", appData.preferred_inspection_date || "—"],
+                            ["Ownership Type", reg.ownership_type || "—"],
+                            ["Years in Operation", insp?.institution?.years_operation ?? "—"],
+                            ["Total Students", insp?.institution?.total_students ?? "—"],
+                            ["Total Staff", insp?.institution?.total_staff ?? "—"],
+                            ["Principal", insp?.institution?.principal_name || "—"],
+                            ["Institution Owner", insp?.institution?.institution_owner || "—"],
+                          ].map(([lbl, val]) => (
+                            <div className="inspection-field" key={lbl}>
+                              <label>{lbl}</label>
+                              <input readOnly value={val ?? ""} style={{ background: "#f8fafc", color: "#475569", cursor: "default" }} />
+                            </div>
+                          ))}
+                        </div>
+                      </section>
+                    );
+                  })()}
 
                   <section className="inspection-section paper-section">
                     <h2 className="paper-section-title">Particulars of the Training Institution</h2>
@@ -562,6 +678,16 @@ export default function HardcopyInspectionForm() {
                   <section className="inspection-section paper-section">
                     <h2 className="paper-section-title">Section 1: Infrastructures / Buildings</h2>
                     <h3 className="paper-question-title">1.1 Infrastructure verification</h3>
+                    {selectedInspection && (() => {
+                      const insp = inspections.find((i) => String(i.id) === String(selectedInspection));
+                      const buildings = insp?.application_data?.registration_data?.infrastructure_buildings || [];
+                      return buildings.length > 0 ? (
+                        <div className="mb-3 flex items-start gap-3 rounded-xl border border-blue-200 bg-blue-50 px-4 py-2.5 text-xs text-blue-800">
+                          <span>ℹ️</span>
+                          <span><strong>Number Provided</strong> column has been pre-filled from the applicant's REG-01 declaration. Fill in <strong>Number Verified</strong> and <strong>Number Functioning</strong> based on your physical inspection.</span>
+                        </div>
+                      ) : null;
+                    })()}
                     <div className="overflow-x-auto">
                       <table className="inspection-table">
                         <thead>
@@ -585,17 +711,56 @@ export default function HardcopyInspectionForm() {
                           </tr>
                         </thead>
                         <tbody>
-                          {infrastructureRows.map((row) => (
-                            <tr key={row}>
-                              <td>{row}</td>
-                              <td>
-                                <input
-                                  type="number"
-                                  min="0"
-                                  value={infrastructure[row].provided}
-                                  onChange={(event) => handleInfrastructureChange(row, "provided", event.target.value)}
-                                />
-                              </td>
+                          {infrastructureRows.map((row) => {
+                            const hasProvided = infrastructure[row].provided !== "";
+                            const hasRemarks = infrastructure[row].remarks !== "";
+                            // Rows whose count comes from the REG-01 infrastructure_buildings array
+                            const reg01Rows = ["Offices","Classrooms","Laboratories","Workshops","Dormitories","Assembly halls","Libraries"];
+                            const isFromReg01 = reg01Rows.includes(row);
+                            const isLibraryBooks = row === "Library books";
+                            const isEquipmentOrJournal = ["Equipment and Tools (Computers)","Equipment / Tools (Other specific)","Library journals"].includes(row);
+
+                            let rowStyle = {};
+                            if (hasProvided) {
+                              // Fully pre-filled from REG-01
+                              rowStyle = { borderLeft: "3px solid #10b981", background: "#f0fdf4" };
+                            } else if (hasRemarks) {
+                              // Partially pre-filled (remarks only)
+                              rowStyle = { borderLeft: "3px solid #3b82f6", background: "#eff6ff" };
+                            } else {
+                              // Not in applicant form — needs manual entry
+                              rowStyle = { borderLeft: "3px solid #f59e0b", background: "#fffbeb" };
+                            }
+
+                            return (
+                              <tr key={row} style={rowStyle}>
+                                <td>
+                                  <span>{row}</span>
+                                  {!hasProvided && !hasRemarks && (
+                                    <span style={{ display: "block", fontSize: "10px", color: "#92400e", fontStyle: "italic", marginTop: "2px" }}>
+                                      ✏️ Fill manually
+                                    </span>
+                                  )}
+                                  {hasRemarks && !hasProvided && (
+                                    <span style={{ display: "block", fontSize: "10px", color: "#1e40af", fontStyle: "italic", marginTop: "2px" }}>
+                                      ℹ️ Remarks pre-filled
+                                    </span>
+                                  )}
+                                  {hasProvided && (
+                                    <span style={{ display: "block", fontSize: "10px", color: "#065f46", fontStyle: "italic", marginTop: "2px" }}>
+                                      ✅ From application
+                                    </span>
+                                  )}
+                                </td>
+                                <td>
+                                  <input
+                                    type="number"
+                                    min="0"
+                                    value={infrastructure[row].provided}
+                                    onChange={(event) => handleInfrastructureChange(row, "provided", event.target.value)}
+                                  />
+                                </td>
+
                               <td>
                                 <input
                                   type="number"
@@ -627,10 +792,17 @@ export default function HardcopyInspectionForm() {
                                   onChange={(event) => handleInfrastructureChange(row, "remarks", event.target.value)}
                                 />
                               </td>
-                            </tr>
-                          ))}
+                             </tr>
+                            );
+                          })}
                         </tbody>
                       </table>
+                      {/* Color legend */}
+                      <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", marginTop: "8px", fontSize: "11px" }}>
+                        <span style={{ display: "flex", alignItems: "center", gap: "4px" }}><span style={{ width: 12, height: 12, background: "#10b981", borderRadius: 2, display: "inline-block" }} /> Number provided from application</span>
+                        <span style={{ display: "flex", alignItems: "center", gap: "4px" }}><span style={{ width: 12, height: 12, background: "#3b82f6", borderRadius: 2, display: "inline-block" }} /> Remarks pre-filled from application</span>
+                        <span style={{ display: "flex", alignItems: "center", gap: "4px" }}><span style={{ width: 12, height: 12, background: "#f59e0b", borderRadius: 2, display: "inline-block" }} /> Not declared in application – fill manually</span>
+                      </div>
                       <p className="paper-note">*G-Good, A-Average, P-Poor (Tick the appropriate)</p>
                       <p className="paper-note">** Assess if they are adequate, relevant and up to date.</p>
                     </div>
@@ -737,9 +909,9 @@ export default function HardcopyInspectionForm() {
                 </>
               )}
 
-              {inspections.length === 0 && (
+              {!loadingInspections && inspections.length === 0 && (
                 <div className="inspection-empty">
-                  No scheduled inspections were found for this account.
+                  No scheduled inspections found for your account. Please ensure you have been assigned to an inspection team by an administrator.
                 </div>
               )}
 

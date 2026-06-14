@@ -1,10 +1,10 @@
+import json
 import logging
 import random
 from datetime import timedelta
 
 from django.utils import timezone
 from django.contrib.auth.hashers import check_password, make_password
-
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -1714,7 +1714,7 @@ def management_reviews(request):
 @api_view(['GET', 'POST', 'PUT'])
 def management_inspections(request):
     try:
-        require_management_role(request, allowed_roles=['admin', 'inspector', 'zonal_manager'])
+        current_user = require_management_role(request, allowed_roles=['admin', 'inspector', 'zonal_manager'])
     except Exception as exc:
         return _error_response(exc)
 
@@ -1804,37 +1804,95 @@ def management_inspections(request):
         })
 
     queryset = Inspection.objects.select_related('application__institution__user').order_by('-scheduled_date')
+
+    # Inspectors only see inspections assigned to teams they belong to
+    if current_user.role == 'inspector':
+        inspector_team_ids = TeamMember.objects.filter(user=current_user).values_list('team_id', flat=True)
+        queryset = queryset.filter(team_id__in=inspector_team_ids)
+
     search = request.GET.get('search')
     if search:
         queryset = queryset.filter(
             application__reference_number__icontains=search
         )
 
-    data = [
-        {
+    data = []
+    for inspection in queryset:
+        inst = inspection.application.institution if (inspection.application and inspection.application.institution) else None
+        app = inspection.application if inspection.application else None
+
+        # Parse registration_data JSON stored by the applicant form
+        reg_data = {}
+        if inst and inst.registration_data:
+            try:
+                reg_data = json.loads(inst.registration_data)
+            except Exception:
+                reg_data = {}
+
+        institution_payload = None
+        if inst:
+            institution_payload = {
+                # Core identification
+                "name": inst.institution_name,
+                "institution_type": inst.institution_type or "",
+                "registration_number": inst.registration_number or "",
+                "certificate_number": inst.certificate_number or "",
+                # Location
+                "location": inst.location or inst.city or inst.region or "",
+                "district": inst.district or "",
+                "plot": inst.ward or inst.street or reg_data.get("plot_number", ""),
+                "address": inst.street_address or "",
+                "region": inst.region or "",
+                "city": inst.city or "",
+                "ward": inst.ward or "",
+                "street": inst.street or "",
+                # Contact
+                "phone": inst.principal_phone or (inst.user.phone if inst.user else "") or "",
+                "email": inst.principal_email or (inst.user.email if inst.user else "") or "",
+                "fax": reg_data.get("fax", ""),
+                "webpage": reg_data.get("webpage", ""),
+                # Ownership & Management
+                "institution_owner": inst.institution_owner or "",
+                "owner_title": inst.owner_title or "",
+                "principal_name": inst.principal_name or "",
+                # Stats
+                "total_students": inst.total_students,
+                "total_staff": inst.total_staff,
+                "programs_offered": inst.programs_offered or "",
+                "years_operation": inst.years_operation,
+            }
+
+        application_payload = None
+        if app:
+            application_payload = {
+                "id": app.id,
+                "reference_number": app.reference_number,
+                "application_type": app.application_type,
+                "category": app.category,
+                "programs_requested": app.programs_requested or "",
+                "application_description": app.application_description or "",
+                "expected_students": app.expected_students,
+                "preferred_inspection_date": app.preferred_inspection_date,
+                "status": app.status,
+                # Full applicant wizard data (used to pre-fill infrastructure table etc.)
+                "registration_data": reg_data,
+            }
+
+        data.append({
             "id": inspection.id,
-            "application": inspection.application.id,
-            "application_reference": inspection.application.reference_number,
+            "application": app.id if app else None,
+            "application_reference": app.reference_number if app else "",
             "team": inspection.team.id,
             "scheduled_date": inspection.scheduled_date,
             "status": inspection.inspection_status,
             "result": inspection.inspection_result,
             "remarks": inspection.overall_remarks,
-            "institution": {
-                "name": inspection.application.institution.institution_name,
-                "location": inspection.application.institution.location or inspection.application.institution.city or inspection.application.institution.region or "",
-                "district": inspection.application.institution.district or "",
-                "plot": inspection.application.institution.ward or inspection.application.institution.street or "",
-                "address": inspection.application.institution.street_address or "",
-                "phone": inspection.application.institution.principal_phone or inspection.application.institution.user.phone or "",
-                "email": inspection.application.institution.principal_email or inspection.application.institution.user.email or "",
-                "webpage": "",
-            } if inspection.application and inspection.application.institution else None
-        }
-        for inspection in queryset
-    ]
+            "institution": institution_payload,
+            "application_data": application_payload,
+        })
 
     return Response(data)
+
 
 
 @api_view(['GET', 'POST', 'DELETE'])
@@ -2028,56 +2086,70 @@ def management_inspection_responses(request):
         except Inspection.DoesNotExist:
             return Response({"error": "Inspection not found."}, status=404)
 
-        form, _ = InspectionForm.objects.get_or_create(
-            form_name=form_name,
-            version=version,
-        )
+        # Safe lookup — get_or_create can throw MultipleObjectsReturned if duplicates exist
+        form = InspectionForm.objects.filter(form_name=form_name, version=version).first()
+        if not form:
+            form = InspectionForm.objects.create(form_name=form_name, version=version)
 
-        saved = []
-        for item in responses_data:
-            question_text = item.get('question_text')
-            actual_answer = item.get('actual_answer')
-            score = item.get('score')
-            comments = item.get('comments', '')
-            expected_answer = item.get('expected_answer') or 'Select the matching score from the inspection rubric.'
+        try:
+            saved = []
+            for item in responses_data:
+                question_text = item.get('question_text')
+                actual_answer = item.get('actual_answer')
+                score = item.get('score')
+                comments = item.get('comments', '')
+                expected_answer = item.get('expected_answer') or 'Select the matching score from the inspection rubric.'
 
-            if not question_text or actual_answer in [None, ''] or score in [None, '']:
-                return Response(
-                    {"error": "Each response requires question_text, actual_answer, and score."},
-                    status=400,
-                )
+                if not question_text or actual_answer is None or actual_answer == '' or score is None or score == '':
+                    return Response(
+                        {"error": "Each response requires question_text, actual_answer, and score."},
+                        status=400,
+                    )
 
-            try:
-                score = int(score)
-            except (TypeError, ValueError):
-                return Response({"score": "Score must be a whole number."}, status=400)
+                try:
+                    score = int(score)
+                except (TypeError, ValueError):
+                    return Response({"score": "Score must be a whole number."}, status=400)
 
-            question, _ = FormQuestion.objects.get_or_create(
-                form=form,
-                question_text=question_text,
-                defaults={"expected_answer": expected_answer},
-            )
+                # Safe lookup — avoids MultipleObjectsReturned if duplicates exist
+                question = FormQuestion.objects.filter(
+                    form=form,
+                    question_text=question_text,
+                ).first()
+                if not question:
+                    question = FormQuestion.objects.create(
+                        form=form,
+                        question_text=question_text,
+                        expected_answer=expected_answer,
+                    )
 
-            response = InspectionResponse.objects.filter(
-                inspection=inspection,
-                question=question,
-            ).first()
-
-            if response:
-                response.actual_answer = actual_answer
-                response.comments = comments
-                response.score = score
-                response.save(update_fields=['actual_answer', 'comments', 'score'])
-            else:
-                response = InspectionResponse.objects.create(
+                response = InspectionResponse.objects.filter(
                     inspection=inspection,
                     question=question,
-                    actual_answer=actual_answer,
-                    comments=comments,
-                    score=score,
-                )
+                ).first()
 
-            saved.append(response.id)
+                if response:
+                    response.actual_answer = actual_answer
+                    response.comments = comments
+                    response.score = score
+                    response.save(update_fields=['actual_answer', 'comments', 'score'])
+                else:
+                    response = InspectionResponse.objects.create(
+                        inspection=inspection,
+                        question=question,
+                        actual_answer=actual_answer,
+                        comments=comments,
+                        score=score,
+                    )
+
+                saved.append(response.id)
+
+        except Exception as loop_exc:
+            import traceback
+            return Response(
+                {"error": f"Error processing responses: {str(loop_exc)}", "detail": traceback.format_exc()},
+                status=500,
+            )
 
         inspection.inspection_status = 'completed'
         inspection.application.inspection_status = 'completed'
@@ -2099,8 +2171,15 @@ def management_inspection_responses(request):
         inspection.overall_remarks = request.data.get('overall_remarks') or (
             f"Total score: {total_score}; Average score: {average_score}"
         )
-        inspection.save()
-        inspection.application.save(update_fields=['inspection_status'])
+        try:
+            inspection.save()
+            inspection.application.save(update_fields=['inspection_status'])
+        except Exception as save_exc:
+            import traceback
+            return Response(
+                {"error": f"Failed to save inspection record: {str(save_exc)}", "detail": traceback.format_exc()},
+                status=500,
+            )
 
         return Response({
             "inspection": inspection.id,
