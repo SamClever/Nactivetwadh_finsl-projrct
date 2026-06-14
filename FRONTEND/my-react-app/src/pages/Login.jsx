@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { showToast, showError } from "../services/alertService";
+import logo from "../assets/logo.png";
 import "../styles/login.css";
 
 export default function Login() {
@@ -74,7 +75,7 @@ export default function Login() {
     <div className="login-container">
       <div className="login-card">
         <div className="login-header">
-          <img src="/src/assets/logo.png" alt="logo" />
+          <img src={logo} alt="logo" />
           <h2>Sign in</h2>
           <p>NACTVET Institutions Registration and Accreditation System</p>
         </div>

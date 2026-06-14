@@ -1,6 +1,7 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { showSuccess, showError } from "../services/alertService";
+import logo from "../assets/logo.png";
 import "../styles/Register.css";
 
 export default function Register() {
@@ -100,7 +101,7 @@ export default function Register() {
     <div className="register-container">
       <div className="register-card">
         <div className="register-header">
-          <img src="/src/assets/logo.png" alt="logo" />
+          <img src={logo} alt="logo" />
           <h2>Create account</h2>
          
         </div>

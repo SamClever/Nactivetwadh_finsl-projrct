@@ -4,6 +4,7 @@ import axiosInstance from "axios";
 import Sidebar from "../components/Sidebar";
 import Topbar from "../components/Topbar";
 import LocationAutocomplete from "../components/LocationAutocomplete";
+import ModernDatePicker from "../components/ModernDatePicker";
 import { showSuccess, showError } from "../services/alertService";
 
 import {
@@ -351,7 +352,7 @@ export default function Institution() {
         institution_type: formData.institution_type,
         registration_number: formData.registration_number,
         certificate_number: formData.certificate_number,
-        institution_owner: formData.institution_owner,
+        institution_owner: formData.owner_name || formData.institution_owner,
         owner_title: formData.owner_title,
         principal_name: formData.principal_name,
         principal_email: formData.principal_email,
@@ -981,8 +982,7 @@ export default function Institution() {
 
                     <div className="form-group">
                       <label>Date of Establishment</label>
-                      <input
-                        type="date"
+                      <ModernDatePicker
                         name="establishment_date"
                         value={formData.establishment_date}
                         onChange={handleChange}
@@ -1604,8 +1604,7 @@ export default function Institution() {
 
                     <div className="form-group">
                       <label>Date of Last Review</label>
-                      <input
-                        type="date"
+                      <ModernDatePicker
                         name="curriculum_last_review_date"
                         value={formData.curriculum_last_review_date}
                         onChange={handleChange}
@@ -3031,12 +3030,11 @@ export default function Institution() {
                   <div className="form-row">
                     <div className="form-group">
                       <label>Date of Signature *</label>
-                      <input
-                        type="date"
+                      <ModernDatePicker
                         name="applicant_date"
                         value={formData.applicant_date}
                         onChange={handleChange}
-                        className={errors.applicant_date ? "error" : ""}
+                        error={errors.applicant_date}
                       />
                       {errors.applicant_date && <span className="error-message">{errors.applicant_date}</span>}
                     </div>
@@ -3151,8 +3149,7 @@ export default function Institution() {
                     </div>
                     <div className="form-group">
                       <label>Witness Signed Date</label>
-                      <input
-                        type="date"
+                      <ModernDatePicker
                         name="witness_date_signed"
                         value={formData.witness_date_signed}
                         onChange={handleChange}
