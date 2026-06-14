@@ -415,7 +415,13 @@ def login(request):
                     user.email,
 
                     "role":
-                    user.role
+                    user.role,
+
+                    "first_name":
+                    user.first_name,
+
+                    "last_name":
+                    user.last_name
 
                 }
 

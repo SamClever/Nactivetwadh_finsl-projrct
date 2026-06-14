@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { showToast, showError } from "../services/alertService";
@@ -10,22 +10,6 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-
-  // If already logged in (token + user in localStorage), redirect away from login
-  useEffect(() => {
-    try {
-      const rawToken = localStorage.getItem('token');
-      const token = rawToken ? String(rawToken).trim().replace(/^"|"$/g, '') : null;
-      let user = null;
-      try { user = JSON.parse(localStorage.getItem('user')); } catch { user = null; }
-      if (token && user) {
-        // force full reload to dashboard to ensure ProtectedRoute sees storage
-        window.location.href = '/dashboard';
-      }
-    } catch (e) {
-      // ignore
-    }
-  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

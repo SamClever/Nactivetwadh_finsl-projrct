@@ -16,7 +16,8 @@ export default function Topbar() {
   };
 
   const currentTitle = pageTitles[location.pathname] || "NACTVET Dashboard";
-  const displayName = user?.institution || user?.username || "User";
+  const fullName = [user?.first_name, user?.last_name].filter(Boolean).join(" ");
+  const displayName = fullName || user?.institution || (user?.username && !user.username.includes('@') ? user.username : user.username ? user.username.split('@')[0] : "User");
 
   const handleLogout = () => {
     localStorage.clear();
